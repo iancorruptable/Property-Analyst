@@ -1,55 +1,49 @@
 # Property Analyst — Real Estate Command Center
 
+Interactive React dashboard for tracking, analyzing, and managing a rental property.
+
 **Property:** 9577 Naples Lane, Navarre, FL 32566
-**Owner Dashboard:** Active
-**Last Updated:** 2026-03-16
-
-## System Overview
-
-This is a living property management and analysis system designed for a military homeowner who may PCS and convert a primary residence to a rental property.
-
-## Module Index
-
-| Module | File | Description |
-|--------|------|-------------|
-| 1 | [executive-dashboard.md](modules/01-executive-dashboard.md) | Top-level status, alerts, KPIs |
-| 2 | [property-profile.md](modules/02-property-profile.md) | Permanent property record |
-| 3 | [va-entitlement-tracker.md](modules/03-va-entitlement-tracker.md) | VA loan benefit and future buying power |
-| 4 | [mortgage-equity-tracker.md](modules/04-mortgage-equity-tracker.md) | Loan balance, equity, amortization |
-| 5 | [appreciation-value-tracker.md](modules/05-appreciation-value-tracker.md) | Market value estimates and trends |
-| 6 | [rent-readiness-tracker.md](modules/06-rent-readiness-tracker.md) | Rental preparation checklist |
-| 7 | [rental-income-cashflow.md](modules/07-rental-income-cashflow.md) | Income, expenses, NOI, cash flow |
-| 8 | [tax-tracker.md](modules/08-tax-tracker.md) | Tax basis, depreciation, deductions |
-| 9 | [compliance-landlord-ops.md](modules/09-compliance-landlord-ops.md) | Florida landlord legal requirements |
-| 10 | [property-manager-oversight.md](modules/10-property-manager-oversight.md) | PM scorecard and oversight tools |
-| 11 | [tenant-lifecycle-tracker.md](modules/11-tenant-lifecycle-tracker.md) | Tenant screening through move-out |
-| 12 | [maintenance-capex.md](modules/12-maintenance-capex.md) | Maintenance log and preventive schedule |
-| 13 | [insurance-risk.md](modules/13-insurance-risk.md) | Policies, risk register, gap analysis |
-| 14 | [military-pcs-readiness.md](modules/14-military-pcs-readiness.md) | PCS checklists and remote-owner tools |
-| 15 | [alerts-deadlines.md](modules/15-alerts-deadlines.md) | Consolidated alert center |
-| 16 | [documents-vault.md](modules/16-documents-vault.md) | Document index and storage tracker |
-| 17 | [decision-engine.md](modules/17-decision-engine.md) | Keep/sell/rent/refi analysis |
-| 18 | [intake-form.md](modules/18-intake-form.md) | Data collection questionnaire |
-| 19 | [output-template.md](modules/19-output-template.md) | Standard reporting format |
-| 20 | [standing-instructions.md](modules/20-standing-instructions.md) | Operating rules and principles |
 
 ## Quick Start
 
-1. Complete the [Intake Form](modules/18-intake-form.md)
-2. Review the [Executive Dashboard](modules/01-executive-dashboard.md)
-3. Check [Alerts & Deadlines](modules/15-alerts-deadlines.md)
-4. Run the [Decision Engine](modules/17-decision-engine.md)
+```bash
+npm install
+npm run dev
+```
 
-## Status Labels
+Open http://localhost:5173 in your browser.
 
-- **Confirmed** — Verified by owner, document, or professional
-- **Estimated** — Calculated from available data, may vary
-- **Missing** — Required data not yet provided
-- **Risk** — Issue requiring attention
-- **Action** — Owner decision or task needed
+## Features
 
-## Traffic Light System
+- **Executive Dashboard** — KPIs, alerts, traffic-light status indicators
+- **Data Intake Form** — 7-section wizard to enter all property data
+- **Cash Flow Analysis** — NOI calculator, break-even rent, vacancy stress tests, rent sensitivity
+- **VA Entitlement Tracker** — Remaining entitlement, future buying power scenarios
+- **Mortgage & Equity** — Loan tracking, equity visualization, LTV monitoring
+- **Property Profile** — Editable property details and HOA information
+- **Rent-Readiness Checklist** — 35-item interactive checklist
+- **Alerts & Deadlines** — Consolidated alert center with FL-specific deadlines
 
-- `[GREEN]` — On track, no action needed
-- `[YELLOW]` — Watch closely, action may be needed soon
-- `[RED]` — Urgent issue, immediate action required
+## Tech Stack
+
+- React 19 + Vite
+- Tailwind CSS 4
+- React Router 7
+- Recharts (charts/visualizations)
+- Lucide React (icons)
+- localStorage for data persistence
+
+## Data Storage
+
+All data is stored in your browser's localStorage. No server or database required.
+Data persists between sessions automatically.
+
+## Architecture
+
+```
+src/
+├── components/     # Reusable UI components (Card, FormField, Layout, StatusBadge)
+├── pages/          # Page components for each module
+├── store/          # PropertyContext (React Context + useReducer + localStorage)
+└── utils/          # Calculation functions (cash flow, VA entitlement, depreciation)
+```
