@@ -7,117 +7,127 @@
 
 ## Active Alerts
 
-### `[RED]` — Urgent / Immediate Action
+### `[RED]` — Urgent / Immediate Action Required
 
 | # | Alert | Due Date | Owner/Manager | Recommended Action |
 |---|-------|----------|---------------|-------------------|
 | 1 | Complete property intake data | ASAP | Owner | Fill out Module 18 intake form |
-| 2 | Verify flood zone designation | ASAP | Owner | Pull FEMA flood map for property |
-| 3 | Obtain VA Certificate of Eligibility | Within 2 weeks | Owner | Request via eBenefits or VA portal |
+| 2 | Verify flood zone designation | ASAP | Owner | Check FEMA flood map for parcel |
+| 3 | Obtain VA Certificate of Eligibility | Within 2 weeks | Owner | eBenefits or VA.gov |
 
-### `[YELLOW]` — Watch / Upcoming
+### `[YELLOW]` — Watch / Action Needed Soon
 
 | # | Alert | Due Date | Owner/Manager | Recommended Action |
 |---|-------|----------|---------------|-------------------|
-| 4 | Insurance policy review / conversion | Before tenant placement | Owner | Contact agent for landlord policy quote |
-| 5 | HOA rental restriction verification | Before listing | Owner | Request CC&Rs from HOA |
-| 6 | Homestead exemption decision | Jan 1 of conversion year | Owner | Plan removal timing with county |
-| 7 | Property manager selection | Before PCS or listing | Owner | Interview 2–3 PMs (Module 10) |
-| 8 | Reserve fund establishment | Before tenant placement | Owner | Set target: 3–6 months expenses |
-| 9 | CPA consultation for rental conversion | Before placing in service | Owner | Discuss depreciation, basis, tax impacts |
-| 10 | Hurricane season prep | Before June 1, 2026 | Owner/PM | Complete hurricane checklist (Module 12) |
+| 4 | Insurance policy review / conversion | Before tenant placement | Owner | Contact insurer for landlord policy |
+| 5 | HOA rental restriction verification | Before tenant placement | Owner | Request CC&Rs |
+| 6 | Property manager selection | Before listing | Owner | Interview 2–3 PMs |
+| 7 | Homestead exemption removal planning | Before Jan 1 of rental year | Owner | Contact Santa Rosa County appraiser |
+| 8 | CPA consultation for rental conversion | Before placing in service | Owner | Schedule appointment |
+| 9 | Reserve fund establishment | Before tenant placement | Owner | Target 3–6 months expenses |
+| 10 | Umbrella liability policy | Before tenant placement | Owner | Get quote from insurance agent |
 
-### `[GREEN]` — On Track / Informational
+### `[GREEN]` — On Track / Monitoring
 
-| # | Alert | Due Date | Owner/Manager | Notes |
-|---|-------|----------|---------------|-------|
-| — | _[No green alerts — insufficient data to confirm anything on track]_ | | | |
+| # | Alert | Due Date | Owner/Manager | Recommended Action |
+|---|-------|----------|---------------|-------------------|
+| _[None yet — no data to confirm on-track items]_ | | | | |
 
 ---
 
-## Recurring Deadlines Calendar
+## Recurring Deadline Calendar
 
 ### Monthly
 
 | Day | Item | Responsible | Notes |
-|-----|------|------------|-------|
-| 1st | Mortgage payment due | Auto-pay / Owner | Verify payment posted |
-| 1st | Rent due (when tenant in place) | Tenant → PM | Track collection |
-| 15th | Owner statement review (when PM active) | Owner | Review PM statement |
-| _[TBD]_ | HOA dues (if monthly) | Owner / Escrow | Verify payment |
+|-----|------|-------------|-------|
+| 1st | Mortgage payment due | Auto-pay / Owner | Verify monthly |
+| 1st | HOA dues due (if monthly) | Owner / Auto-pay | _[Verify frequency]_ |
+| 15th | Review PM owner statement | Owner | See Module 10 monthly checklist |
+| 15th | Review rent collection status | Owner / PM | |
+| Last day | Reconcile monthly income/expenses | Owner | Update Module 7 |
 
 ### Quarterly
 
 | Month | Item | Responsible | Notes |
-|-------|------|------------|-------|
-| Mar / Jun / Sep / Dec | Property inspection (when tenant in place) | PM | Request report + photos |
-| Mar / Jun / Sep / Dec | Pest control treatment | Vendor / PM | Verify completed |
-| Mar / Jun / Sep / Dec | Financial review — compare actuals to budget | Owner | Module 7 reconciliation |
+|-------|------|-------------|-------|
+| Jan / Apr / Jul / Oct | Property inspection (if rented) | PM | Minimum quarterly |
+| Jan / Apr / Jul / Oct | Pest control treatment | PM / Vendor | If on quarterly plan |
+| Mar / Jun / Sep / Dec | HOA dues (if quarterly) | Owner | _[Verify frequency]_ |
 
 ### Semi-Annual
 
 | Month | Item | Responsible | Notes |
-|-------|------|------------|-------|
-| Apr / Oct | HVAC professional service | Vendor / PM | Spring cooling, fall heating |
-| May / Nov | Smoke detector / CO detector check | PM / Tenant | Test + batteries |
-| May / Nov | Gutter cleaning | Vendor / PM | Before storm season, after fall |
+|-------|------|-------------|-------|
+| Mar | HVAC service — cooling tune-up prep | PM / Vendor | Before FL summer |
+| Jun | Hurricane season begins (June 1) | Owner / PM | Verify prep complete |
+| Sep | HVAC service — heating prep | PM / Vendor | Before winter |
+| Nov | Hurricane season ends (Nov 30) | — | Stand down |
 
 ### Annual
 
-| Month | Item | Responsible | Deadline | Notes |
-|-------|------|------------|----------|-------|
-| January | Homestead exemption filing (if reoccupying) | Owner | March 1 | FL deadline |
-| January | Year-end tax document collection | Owner / PM | April 15 tax deadline | 1099, Schedule E prep |
-| March | Homestead exemption deadline | Owner | March 1 | File or confirm removal |
-| May | Hurricane readiness check | Owner / PM | Before June 1 | Hurricane season starts |
-| _[TBD]_ | Insurance renewal — HO/Landlord | Owner | _[Missing]_ | Shop 60 days before renewal |
-| _[TBD]_ | Insurance renewal — Flood | Owner | _[Missing]_ | NFIP: 30 days before effective |
-| _[TBD]_ | Insurance renewal — Wind | Owner | _[Missing]_ | If separate policy |
-| _[TBD]_ | Umbrella renewal | Owner | _[Missing]_ | |
-| November | Property tax payment (FL) | Owner / Escrow | March 31 (delinquent after) | Discount if paid by Nov 30 (4%), Dec (3%), Jan (2%), Feb (1%) |
-| _[TBD]_ | Lease expiration | PM / Owner | _[N/A — no tenant]_ | 90-day advance review |
-| _[TBD]_ | PM contract renewal | Owner | _[N/A — no PM]_ | Review performance before renewing |
-| December | Annual property value estimate update | Owner | Year-end | Update Module 5 |
-| December | Annual maintenance plan review | Owner / PM | Year-end | Update Module 12 |
+| Month | Item | Responsible | Due Date | Notes |
+|-------|------|-------------|----------|-------|
+| Jan | Homestead exemption filing window opens | Owner | Jan 1 – Mar 1 | If reoccupying |
+| Jan | Review insurance policies for renewal | Owner | _[Renewal date]_ | Shop if premium increased |
+| Feb | Gather tax documents (1098, expenses, depreciation) | Owner / CPA | Before April 15 | |
+| Mar | Homestead exemption deadline | Owner | March 1 | File or remove |
+| Apr | Federal tax return due | Owner / CPA | April 15 | |
+| May | Hurricane prep review | Owner / PM | Before June 1 | |
+| Jun | Mid-year financial review | Owner | June 30 | YTD cash flow check |
+| Jul | Review property value estimate | Owner | — | Update Module 5 |
+| Aug | Review lease renewal timeline | Owner / PM | 90 days before expiration | |
+| Sep | Review insurance for renewal shopping | Owner | _[Renewal date - 60 days]_ | |
+| Oct | Annual property tax review | Owner | _[Verify due date]_ | |
+| Nov | FL property tax due (discount period) | Owner / Escrow | November 1 | 4% discount if paid in Nov |
+| Dec | Year-end financial summary | Owner | December 31 | Update all modules |
 
 ---
 
-## Deadline Tracker (One-Time / Event-Based)
+## Lease-Specific Deadlines
 
-| # | Deadline | Date | Owner/Manager | Severity | Status | Notes |
-|---|----------|------|---------------|----------|--------|-------|
-| 1 | Complete intake form | ASAP | Owner | `[RED]` | Not done | Module 18 |
-| 2 | Get COE | ASAP | Owner | `[RED]` | Not done | Module 3 |
-| 3 | Verify flood zone | ASAP | Owner | `[RED]` | Not done | FEMA map |
-| 4 | HOA rental approval | Before listing | Owner | `[YELLOW]` | Not done | |
-| 5 | Insurance conversion | Before tenant | Owner | `[YELLOW]` | Not done | |
-| 6 | PM selection | Before PCS/listing | Owner | `[YELLOW]` | Not done | |
-| 7 | Homestead removal | Jan 1 of rental year | Owner | `[YELLOW]` | Not done | |
-| 8 | CPA consultation | Before rental conversion | Owner | `[YELLOW]` | Not done | |
-| 9 | Reserve fund target | Before tenant | Owner | `[YELLOW]` | Not done | |
-| 10 | Rent-readiness checklist | Before listing | Owner/PM | `[YELLOW]` | Not done | Module 6 |
+| Item | Date | Status | Notes |
+|------|------|--------|-------|
+| Lease start date | _[N/A — no tenant]_ | — | |
+| Lease end date | _[N/A]_ | — | |
+| Renewal offer deadline (to tenant) | _[N/A]_ | — | 60+ days before lease end |
+| Tenant response deadline | _[N/A]_ | — | |
+| Non-renewal notice deadline | _[N/A]_ | — | Per lease terms |
+| Rent increase notice | _[N/A]_ | — | 30+ days notice |
+| Inspection due | _[N/A]_ | — | Per PM schedule |
 
 ---
 
-## Alert Configuration
+## Document Expiration Tracking
 
-| Alert Type | Trigger | Lead Time | Notification Method |
-|------------|---------|-----------|-------------------|
-| Mortgage due | Monthly | N/A (auto-pay recommended) | Calendar |
-| Insurance renewal | Annual | 60 days before | Calendar + agent contact |
-| Tax due | Annual | 30 days before | Calendar |
-| Lease expiration | Per lease | 90 days before | PM + Calendar |
-| Renewal offer deadline | Per lease | 60 days before end | PM |
-| Inspection due | Quarterly | 2 weeks before | PM |
-| Maintenance schedule | Per item | 2 weeks before | PM + Calendar |
-| Vacancy > 30 days | Per event | Immediate | PM → Owner |
-| Rent delinquent > 5 days | Per event | Immediate | PM → Owner |
-| PM statement > 5 days late | Monthly | Immediate | Owner follow-up |
-| Reserve fund below threshold | Per event | Immediate | PM → Owner |
-| Document expiration | Per document | 60 days before | Calendar |
-| HOA assessment due | Per schedule | 15 days before | Calendar |
-| Portability deadline (FL) | 3 years from homestead removal | 6 months before | Calendar |
+| Document | Expiration Date | Renewal Action | Status |
+|----------|----------------|---------------|--------|
+| Homeowners/Landlord Insurance | _[Missing]_ | Renew or shop 60 days before | `[YELLOW]` |
+| Flood Insurance | _[Missing]_ | Renew 30 days before | `[YELLOW]` |
+| Windstorm Insurance | _[Missing]_ | Renew 30 days before | `[YELLOW]` |
+| Umbrella Policy | _[Missing]_ | Renew 30 days before | `[YELLOW]` |
+| Home Warranty (if any) | _[Missing]_ | Evaluate renewal value | `[YELLOW]` |
+| PM Contract | _[Missing]_ | Review before auto-renewal | `[YELLOW]` |
+| Lease Agreement | _[N/A]_ | — | — |
+| Power of Attorney | _[N/A]_ | — | — |
+| VA COE | _[Does not expire — but update as needed]_ | — | — |
 
 ---
 
-_Review this alert center weekly. Update deadlines as dates become known._
+## Threshold Alerts (Set Once Data Available)
+
+| Alert Trigger | Threshold | Current Value | Status |
+|---------------|-----------|---------------|--------|
+| Vacancy exceeds target | > 30 days | _[N/A]_ | — |
+| Rent delinquent | > 5 days past due | _[N/A]_ | — |
+| Reserve fund below minimum | < $______ | _[Missing]_ | — |
+| PM response time > 48 hours | > 48 hours | _[N/A]_ | — |
+| Maintenance cost exceeds budget | > $____/month | _[N/A]_ | — |
+| Cash flow negative for 2+ months | Negative trend | _[N/A]_ | — |
+| Insurance premium increase > 15% | > 15% at renewal | _[N/A]_ | — |
+| Property value decline > 5% | > 5% from peak | _[N/A]_ | — |
+| LTV exceeds 90% | > 90% | _[N/A]_ | — |
+
+---
+
+_Review this alert center weekly. Update dates as they become known._
