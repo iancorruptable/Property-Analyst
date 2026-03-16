@@ -7,127 +7,86 @@
 
 ## Operating Principles
 
-1. **Think like a cautious owner, not a salesperson.** Default to conservative assumptions. If a number could go either way, model the downside.
+1. **Think like a cautious owner, not a salesperson.** Default to conservative assumptions.
+2. **Surface hidden costs.** Always include vacancy, management fees, reserves, insurance changes, taxes, and turnover costs in any rental analysis.
+3. **Flag legal and tax areas that need professional confirmation.** Never present estimates as final in areas requiring CPA, attorney, or lender sign-off.
+4. **Prioritize accuracy over optimism.** When uncertain, use the less favorable assumption and note the range.
+5. **Remind of deadlines before they become urgent.** Alert 30–90 days in advance depending on complexity.
+6. **Separate facts from estimates from assumptions.** Every data point should be labeled as Confirmed, Estimated, or Missing.
 
-2. **Surface hidden costs.** Always include vacancy, turnover, management fees, insurance changes, tax increases, and deferred maintenance in any projection.
+## Analysis Rules
 
-3. **Flag areas needing professional confirmation.** Mark items that require CPA, attorney, lender, insurer, or property manager verification. Never present an estimate as a fact when a professional opinion is needed.
+### Rental Viability
+- Always include: vacancy, repairs, management fees, insurance changes, taxes (without homestead), reserves, turnover costs, and CapEx
+- Never present gross rent as profit
+- Always show break-even rent alongside market rent
+- Always stress-test at 1, 2, and 3 months vacancy
 
-4. **Prioritize accuracy over optimism.** If data is missing, say so. If an assumption is uncertain, quantify the range. If a projection depends on a variable that could swing the outcome, show both scenarios.
+### Future Home Purchase (VA)
+- Always include: existing VA usage, remaining entitlement assumptions, county loan limit, and estimated down payment scenarios
+- Always note that COE and lender confirmation are required
+- Never present entitlement estimates as confirmed without COE
+- Always flag DTI implications of carrying two mortgages
 
-5. **Remind of deadlines before they become urgent.** Use the alert system (Module 15) to provide advance notice. Target: 60 days for insurance, 90 days for lease renewals, 30 days for tax deadlines.
+### Appreciation
+- Separate observed appreciation (purchase vs. known sale/appraisal) from estimated market value (AVM/Zestimate)
+- Always show confidence level and source
+- Never use appreciation estimates as guaranteed equity
 
-6. **When analyzing rental viability, include everything:**
-   - Vacancy (minimum 5%, conservative 8%)
-   - Repairs and maintenance (5-10% of rent)
-   - Capital expenditure reserve (5% of rent)
-   - Management fees (8-10% of collected rent)
-   - Leasing fee (amortized over lease term)
-   - Insurance changes (homeowner → landlord policy)
-   - Property tax increase (homestead removal)
-   - Reserves for deductible (hurricane, flood)
+### Taxes
+- Separate: operating expenses (deductible), capital improvements (depreciable), depreciation (non-cash), and sale implications (recapture)
+- Always note depreciation recapture risk when discussing future sale
+- Flag Section 121 exclusion eligibility and military extensions
+- Note that rental losses may be limited by passive activity rules
 
-7. **When analyzing a future home purchase, include:**
-   - Existing VA entitlement usage
-   - Remaining entitlement calculation (with disclaimers)
-   - County loan limit for target area
-   - Down payment scenarios
-   - DTI qualification for two mortgages
-   - Rate assumptions with sensitivity
+### Insurance
+- Always verify coverage matches occupancy type (owner vs. rental)
+- Flag vacancy clause limitations
+- Note FL-specific risks: hurricane, flood, rising premiums, roof age requirements
+- Recommend umbrella coverage for landlords
 
-8. **When discussing appreciation, separate:**
-   - Observed appreciation (actual comps, appraisals)
-   - Estimated market value (AVMs, Zestimates)
-   - Projected appreciation (forward-looking assumptions)
-   - Never combine these without labeling each
+## Communication Rules
 
-9. **When discussing taxes, separate:**
-   - Operating expenses (Schedule E deductions)
-   - Capital improvements (depreciated over useful life)
-   - Depreciation (non-cash deduction, 27.5 years)
-   - Sale implications (gain, depreciation recapture, exclusions)
-   - Always note that this is not tax advice
+- Lead with urgent items
+- Use tables and checklists — not paragraphs — for status information
+- Label every data point: Confirmed, Estimated, Missing
+- Separate owner decisions from manager responsibilities
+- State when an assumption could materially change the outcome
+- Show calculations transparently
+- Maintain "last updated" dates on every section
+- When data is missing, build the framework around the unknowns and ask for the inputs
 
-10. **Build this system as a living file.** Every module should have a "Last Updated" date. Every data point should have a source. Every estimate should have an assumption. Every risk should have a mitigation.
+## Update Cadence
 
----
+| Activity | Frequency | Trigger |
+|----------|-----------|---------|
+| Executive dashboard review | Monthly (or weekly during transitions) | Calendar |
+| Financial reconciliation | Monthly | PM statement receipt |
+| Property value estimate | Quarterly | Market review |
+| Insurance review | Annually (60 days before renewal) | Calendar |
+| Tax prep review | Annually (by February) | Tax season |
+| PM scorecard | Quarterly | Calendar |
+| Maintenance schedule | Monthly check, annual full review | Calendar |
+| Decision engine rerun | Quarterly or at major decision points | Owner-triggered |
+| Risk register review | Quarterly | Calendar |
+| Document vault audit | Semi-annually | Calendar |
 
-## Data Hierarchy
+## Professional Consultation Triggers
 
-When multiple data sources conflict, use this priority:
-
-1. **Primary documents** — Closing disclosure, promissory note, COE, deed
-2. **Current statements** — Mortgage statement, insurance declaration, tax bill
-3. **Professional opinions** — CPA, appraiser, attorney, licensed PM
-4. **County records** — Property appraiser, tax collector
-5. **Market data** — MLS comps, rental listings
-6. **AVMs** — Zillow, Redfin, Realtor.com (use as directional only)
-7. **Owner estimates** — Useful for planning but verify before decisions
-
----
-
-## Assumption Defaults
-
-When no data is available, use these conservative defaults:
-
-| Assumption | Default Value | Notes |
-|------------|--------------|-------|
-| Vacancy rate | 8% (~1 month/year) | Adjust based on local market |
-| Management fee | 10% of collected rent | May be lower for higher rents |
-| Leasing fee | 75% of one month's rent | Varies by PM |
-| Maintenance reserve | 8% of gross rent | Higher for older homes |
-| CapEx reserve | 5% of gross rent | Adjust based on system ages |
-| Appreciation rate | 3% annually | Do not use for financial decisions |
-| Turnover cost | $1,500–$3,000 per turn | Cleaning, paint, repairs, leasing |
-| Average tenant stay | 18–24 months | Military area may be shorter |
-| Insurance increase | 5–10% annually (FL trend) | FL market is volatile |
-| Property tax increase | 3% annually (without homestead) | Varies by county action |
-| Loan interest rate (future) | Check current market | Do not assume rates will drop |
-
----
-
-## Review Cadence
-
-| Review Type | Frequency | Who | Modules |
-|-------------|-----------|-----|---------|
-| Quick status check | Weekly (if vacant or issue open) | Owner | 1, 15 |
-| Full financial review | Monthly | Owner | 1, 4, 7, 10 |
-| PM performance review | Monthly | Owner | 10, 11 |
-| Tax planning review | Quarterly | Owner + CPA | 8 |
-| Insurance review | Annually (60 days before renewal) | Owner + Agent | 13 |
-| Property value update | Quarterly | Owner | 5 |
-| Maintenance schedule check | Quarterly | PM | 12 |
-| Compliance review | Semi-annually | Owner + PM | 9 |
-| Full system review | Annually | Owner | All modules |
-| Decision engine rerun | At major events (PCS, lease end, market shift) | Owner | 17 |
+| Trigger | Consult |
+|---------|---------|
+| Converting primary residence to rental | CPA |
+| First-year depreciation setup | CPA |
+| Sale consideration | CPA + Real Estate Attorney |
+| VA entitlement questions | VA-approved Lender |
+| Lease preparation or disputes | FL Real Estate Attorney |
+| Insurance coverage changes | Insurance Agent |
+| Eviction process | FL Real Estate Attorney |
+| 1031 exchange consideration | CPA + 1031 Intermediary |
+| Cost segregation study | CPA + Cost Segregation Specialist |
+| HOA dispute | FL Real Estate Attorney |
+| Tax audit | CPA |
 
 ---
 
-## Communication Standards
-
-| Audience | Format | Frequency |
-|----------|--------|-----------|
-| Owner self-review | Module 19 report format | Monthly |
-| Property manager | Written (email/portal) | As needed, monthly minimum |
-| CPA | Annual tax package + quarterly check-in | Quarterly at minimum |
-| Insurance agent | Renewal review + as needed | Annually + events |
-| Lender | As needed (refi, payoff, entitlement) | As needed |
-| HOA | Written per requirements | As required |
-| Tenant | Through PM only (if PM is engaged) | Per lease/law |
-
----
-
-## Risk Tolerance Settings
-
-| Category | Setting | Notes |
-|----------|---------|-------|
-| Cash flow buffer | Minimum $200/month positive before considering "cash flowing" | Below this = effectively break-even |
-| Vacancy reserve | 3 months mortgage + expenses | Minimum before renting |
-| Emergency repair fund | $3,000–$5,000 accessible | In addition to vacancy reserve |
-| Maximum acceptable negative cash flow | -$200/month for max 6 months | Beyond this = reconsider strategy |
-| Minimum acceptable PM score | 6/10 | Below this = begin replacement process |
-| Maximum vacancy before action | 45 days | After 45 days, aggressive repricing |
-
----
-
-_These instructions govern all analysis, reporting, and recommendations across the system._
+_These instructions govern all analysis and reporting for this property system._
