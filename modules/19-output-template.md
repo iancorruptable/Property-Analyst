@@ -7,107 +7,107 @@
 
 ## Standard Report Format
 
-> Use this structure for every property report or update.
+> Use this structure for every periodic report or update.
 
 ---
 
-### 1. CRITICAL ALERTS
+### 1. Critical Alerts
 
-> List any `[RED]` items requiring immediate attention. If none, state "No critical alerts."
-
-| # | Alert | Severity | Action Required | Deadline |
-|---|-------|----------|----------------|----------|
-| | | | | |
+| # | Alert | Severity | Action | Deadline |
+|---|-------|----------|--------|----------|
+| — | _[List any RED items first, then YELLOW]_ | | | |
 
 ---
 
-### 2. DASHBOARD SNAPSHOT
+### 2. Dashboard Snapshot
 
-| Metric | Value | Status |
-|--------|-------|--------|
-| Property Status | | |
-| Estimated Value | $ | |
-| Loan Balance | $ | |
-| Estimated Equity | $ | |
-| LTV | % | |
-| Monthly Payment | $ | |
-| Estimated Rent | $ | |
-| Est. Monthly Cash Flow | $ | |
-| Occupancy | | |
-| Lease End | | |
-| Reserve Fund | $ | |
+| Field | Value | Status |
+|-------|-------|--------|
+| Property Status | _[Owner-occupied / Preparing for rent / Listed / Occupied / Vacant / For sale]_ | |
+| Estimated Value | $______ | _[Source]_ |
+| Loan Balance | $______ | |
+| Estimated Equity | $______ | |
+| LTV | ______% | |
+| Monthly Cash Flow (if rented) | $______ | |
+| Occupancy | _[Occupied / Vacant / Owner-occupied]_ | |
+| Days Vacant (if applicable) | — | |
+| Reserve Fund Balance | $______ | |
 
 ---
 
-### 3. FINANCIAL POSITION
+### 3. Financial Position
 
-| Item | Monthly | Annual | Trend |
-|------|---------|--------|-------|
-| Gross Rent | $ | $ | |
-| Operating Expenses | $ | $ | |
-| NOI | $ | $ | |
-| Debt Service | $ | $ | |
-| Net Cash Flow | $ | $ | |
-| Cash-on-Cash Return | | % | |
+| Metric | Monthly | Annual | Notes |
+|--------|---------|--------|-------|
+| Gross Rent | | | |
+| Operating Expenses | | | |
+| NOI | | | |
+| Debt Service | | | |
+| Net Cash Flow | | | |
+| Cash-on-Cash Return | — | ______% | |
 
----
-
-### 4. RENTAL READINESS
-
-| Category | Complete | Pending | Blocked |
-|----------|----------|---------|---------|
-| Physical prep | /__ | /__ | /__ |
-| Documentation | /__ | /__ | /__ |
-| Financial | /__ | /__ | /__ |
-| **Overall** | __% ready | | |
+**Year-to-Date:**
+| Item | YTD Amount | Budget | Variance |
+|------|-----------|--------|----------|
+| Income | | | |
+| Expenses | | | |
+| Cash Flow | | | |
 
 ---
 
-### 5. TAX AND DEPRECIATION NOTES
+### 4. Rental Readiness
+
+| Category | Completion | Notes |
+|----------|-----------|-------|
+| Physical Preparation | __/19 items | |
+| Documentation | __/8 items | |
+| Financial Setup | __/7 items | |
+| **Overall** | __/34 items | |
+
+---
+
+### 5. Tax and Depreciation Notes
 
 | Item | Value | Notes |
 |------|-------|-------|
-| Depreciable Basis | $ | |
-| Annual Depreciation | $ | |
-| YTD Deductions | $ | |
-| CPA Review Needed | Yes/No | |
+| Annual Depreciation | $______ | |
+| YTD Deductible Expenses | $______ | |
+| CPA Review Current? | Yes/No | |
+| Key Tax Action Items | | |
 
 ---
 
-### 6. VA NEXT-HOME BUYING POWER
+### 6. VA Next-Home Buying Power
 
-| Field | Value |
-|-------|-------|
-| Remaining Entitlement (est.) | $ |
-| Zero-Down Buying Power (est.) | $ |
-| Confidence | Low / Medium / High |
-
----
-
-### 7. PROPERTY MANAGER / TENANT STATUS
-
-| Item | Status |
-|------|--------|
-| PM Performance Score | /100 |
-| Tenant Payment Status | |
-| Open Maintenance Items | |
-| Next Inspection Due | |
-| Lease Status | |
+| Metric | Value | Status |
+|--------|-------|--------|
+| Estimated Remaining Entitlement | $______ | _[Confirmed / Estimated / Unknown]_ |
+| Zero-Down Buying Power | $______ | |
+| COE Current? | Yes/No | |
 
 ---
 
-### 8. MISSING INFORMATION
+### 7. Property Manager / Tenant Status
 
-| # | Data Needed | Impact if Missing | Source |
-|---|------------|-------------------|--------|
-| | | | |
+**PM Scorecard:** __/100
+**Tenant Status:** _[N/A / Current / Delinquent / Notice given]_
+**Lease Expiration:** _[Date]_
+**Next Inspection:** _[Date]_
 
 ---
 
-### 9. RECOMMENDED NEXT 5 ACTIONS
+### 8. Missing Information
 
-| Priority | Action | Owner/PM | Deadline |
-|----------|--------|----------|----------|
+| # | Information Needed | Impact | How to Obtain |
+|---|--------------------|--------|---------------|
+| — | _[List all missing data points]_ | | |
+
+---
+
+### 9. Recommended Next 5 Actions
+
+| Priority | Action | Owner/Manager | Deadline |
+|----------|--------|---------------|----------|
 | 1 | | | |
 | 2 | | | |
 | 3 | | | |
@@ -116,16 +116,16 @@
 
 ---
 
-## Formatting Standards
+## Formatting Rules (Reference)
 
-- **Tables** wherever data comparison is useful
-- **Bullet checklists** for tasks and to-dos
-- **Labels:** Confirmed | Estimated | Missing | Risk | Action
-- **Separation:** Owner decisions vs. Manager responsibilities
-- **Distinction:** Tax estimates vs. Lender estimates vs. Professional advice
-- **Uncertainty:** Always state when an assumption could materially change the outcome
-- **Traffic lights:** `[GREEN]` `[YELLOW]` `[RED]`
+- Tables wherever useful
+- Bullet checklists for tasks
+- Labels: **Confirmed**, **Estimated**, **Missing**, **Risk**, **Action**
+- Separate owner decisions from manager responsibilities
+- Distinguish tax estimates from lender estimates
+- Never hide uncertainty
+- State when an assumption could materially change the outcome
 
 ---
 
-_This template is used for all recurring reports._
+_Generate this report monthly (or weekly during active transitions)._
