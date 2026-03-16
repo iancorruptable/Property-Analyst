@@ -1,60 +1,33 @@
 import { useProperty } from '../store/PropertyContext';
 import Card from '../components/Card';
 import StatusBadge, { StatusDot } from '../components/StatusBadge';
+import { formatCurrency, formatPercent, calcEquity, calcLTV, calcCashFlow, calcBreakEvenRent, getCompleteness, parseCurrency } from '../utils/calculations';
 import { Link } from 'react-router-dom';
-import {
-  formatCurrency, formatPercent, parseCurrency,
-  calcEquity, calcLTV, calcCashFlow, calcBreakEvenRent,
-  getCompleteness
-} from '../utils/calculations';
-import {
-  AlertTriangle, ArrowRight, TrendingUp, Home, DollarSign,
-  Shield, ClipboardCheck, Bell
-} from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
+
+function MetricCard({ label, value, sublabel, status }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <p className="text-xs text-slate-500 font-medium">{label}</p>
+      <p className={`text-2xl font-bold mt-1 ${status === 'red' ? 'text-red-600' : status === 'green' ? 'text-green-600' : 'text-slate-900'}`}>
+        {value}
+      </p>
+      {sublabel && <p className="text-xs text-slate-400 mt-0.5">{sublabel}</p>}
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { state } = useProperty();
   const completeness = getCompleteness(state);
+  const hasData = completeness.filled > 0;
 
-  const purchasePrice = parseCurrency(state.property.purchasePrice);
-  const currentBalance = parseCurrency(state.mortgage.currentBalance);
-  const estimatedValue = purchasePrice || 0; // Use purchase price as baseline if no other value
-  const latestValue = state.valueEstimates?.length > 0
-    ? parseCurrency(state.valueEstimates[state.valueEstimates.length - 1].value)
-    : estimatedValue;
+  const equity = calcEquity(state.property?.purchasePrice || 0, state.mortgage?.currentBalance || 0);
+  const ltv = calcLTV(state.mortgage?.currentBalance, state.property?.purchasePrice);
+  const cashFlow = hasData ? calcCashFlow(state) : null;
+  const breakEven = hasData ? calcBreakEvenRent(state) : 0;
 
-  const equity = latestValue ? calcEquity(latestValue, currentBalance) : 0;
-  const ltv = latestValue ? calcLTV(currentBalance, latestValue) : 0;
-  const cashFlow = calcCashFlow(state);
-  const breakEven = calcBreakEvenRent(state);
-
-  const hasFinancials = completeness.filled >= 4;
-
-  // Generate alerts
-  const alerts = [];
-  if (completeness.percent < 100) {
-    alerts.push({ severity: 'red', message: `Data intake ${completeness.percent}% complete — ${completeness.total - completeness.filled} critical fields missing`, link: '/intake' });
-  }
-  if (!state.taxesInsurance.floodZoneDesignation) {
-    alerts.push({ severity: 'red', message: 'Flood zone not verified — Navarre has significant coastal exposure', link: '/insurance' });
-  }
-  if (!state.vaBenefit.hasCOE || state.vaBenefit.hasCOE === 'no') {
-    alerts.push({ severity: 'red', message: 'VA Certificate of Eligibility not obtained — cannot estimate buying power', link: '/va-tracker' });
-  }
-  if (!state.property.hoaRentalRestrictions) {
-    alerts.push({ severity: 'yellow', message: 'HOA rental restrictions unverified', link: '/property' });
-  }
-  if (!state.taxesInsurance.homesteadExemption) {
-    alerts.push({ severity: 'yellow', message: 'Homestead exemption status unknown — tax impact unclear', link: '/tax' });
-  }
-  if (!state.propertyManager.companyName) {
-    alerts.push({ severity: 'yellow', message: 'No property manager selected', link: '/pm-oversight' });
-  }
-  if (hasFinancials && cashFlow.cashFlow < 0) {
-    alerts.push({ severity: 'yellow', message: `Estimated negative cash flow: ${formatCurrency(cashFlow.cashFlow)}/mo`, link: '/cashflow' });
-  }
-
-  const propertyStatusLabels = {
+  const statusLabels = {
     'owner-occupied': 'Owner Occupied',
     'preparing-for-rent': 'Preparing for Rent',
     'listed': 'Listed for Rent',
@@ -64,230 +37,215 @@ export default function Dashboard() {
     'for-sale': 'For Sale',
   };
 
+  const alerts = [];
+
+  if (completeness.percent < 100) {
+    alerts.push({ severity: 'red', text: `Data intake ${completeness.percent}% complete — financial analysis is limited`, link: '/intake' });
+  }
+  if (!state.taxesInsurance?.hasFloodInsurance) {
+    alerts.push({ severity: 'yellow', text: 'Flood insurance status unverified — Navarre has coastal flood exposure', link: '/insurance' });
+  }
+  if (!state.vaBenefit?.hasCOE || state.vaBenefit.hasCOE === 'no') {
+    alerts.push({ severity: 'red', text: 'VA COE not obtained — cannot estimate future buying power', link: '/va-tracker' });
+  }
+  if (!state.property?.hoaRentalRestrictions) {
+    alerts.push({ severity: 'yellow', text: 'HOA rental restrictions not verified', link: '/compliance' });
+  }
+  if (!state.propertyManager?.companyName) {
+    alerts.push({ severity: 'yellow', text: 'No property manager selected', link: '/pm-oversight' });
+  }
+  if (cashFlow && cashFlow.cashFlow < 0 && hasData) {
+    alerts.push({ severity: 'red', text: `Projected negative cash flow: ${formatCurrency(cashFlow.cashFlow)}/mo`, link: '/cashflow' });
+  }
+  if (!state.taxesInsurance?.insuranceCarrier) {
+    alerts.push({ severity: 'yellow', text: 'Insurance policy details not entered — conversion to landlord policy needed before renting', link: '/insurance' });
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Executive Dashboard</h1>
-          <p className="text-sm text-slate-500">9577 Naples Lane, Navarre, FL 32566</p>
+          <p className="text-sm text-slate-500 mt-1">9577 Naples Lane, Navarre, FL 32566</p>
         </div>
-        <div className="flex items-center gap-3">
-          <StatusBadge status={completeness.percent === 100 ? 'green' : completeness.percent > 50 ? 'yellow' : 'red'}>
-            Data: {completeness.percent}%
-          </StatusBadge>
-          <span className="text-xs text-slate-400">
-            Updated: {new Date(state.lastUpdated).toLocaleDateString()}
-          </span>
+        <div className="text-right">
+          <p className="text-xs text-slate-400">Last Updated</p>
+          <p className="text-sm text-slate-600">{new Date(state.lastUpdated).toLocaleDateString()}</p>
         </div>
       </div>
 
-      {/* Data Intake Banner */}
+      {/* Data Completeness Bar */}
       {completeness.percent < 100 && (
         <Link to="/intake" className="block">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-4 text-white flex items-center justify-between hover:from-blue-700 hover:to-blue-800 transition-colors">
-            <div className="flex items-center gap-3">
-              <ClipboardCheck size={24} />
-              <div>
-                <p className="font-semibold">Complete Your Property Data</p>
-                <p className="text-sm text-blue-100">{completeness.filled}/{completeness.total} critical fields filled — complete intake to unlock all analysis</p>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4 hover:bg-amber-100 transition-colors">
+            <AlertTriangle className="text-amber-600 flex-shrink-0" size={24} />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-900">Data Intake Required</p>
+              <p className="text-xs text-amber-700 mt-0.5">{completeness.filled} of {completeness.total} critical fields completed</p>
+              <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
+                <div className="bg-amber-600 h-2 rounded-full transition-all" style={{ width: `${completeness.percent}%` }} />
               </div>
             </div>
-            <ArrowRight size={20} />
+            <ArrowRight className="text-amber-600" size={20} />
           </div>
         </Link>
       )}
 
-      {/* Critical Alerts */}
-      {alerts.length > 0 && (
-        <Card title="Critical Alerts" status={alerts.some(a => a.severity === 'red') ? 'red' : 'yellow'}>
+      {/* Property Status */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard
+          label="Property Status"
+          value={statusLabels[state.property?.status] || 'Not Set'}
+          status={state.property?.status ? 'green' : 'red'}
+        />
+        <MetricCard
+          label="Est. Value"
+          value={state.property?.purchasePrice ? formatCurrency(state.property.purchasePrice) : '—'}
+          sublabel={hasData ? 'Based on purchase price' : 'Missing'}
+          status={state.property?.purchasePrice ? 'green' : 'red'}
+        />
+        <MetricCard
+          label="Loan Balance"
+          value={state.mortgage?.currentBalance ? formatCurrency(state.mortgage.currentBalance) : '—'}
+          sublabel={state.mortgage?.interestRate ? `${state.mortgage.interestRate}% rate` : ''}
+          status={state.mortgage?.currentBalance ? 'green' : 'red'}
+        />
+        <MetricCard
+          label="Estimated Equity"
+          value={hasData && state.mortgage?.currentBalance ? formatCurrency(equity) : '—'}
+          sublabel={hasData && state.mortgage?.currentBalance ? `LTV: ${formatPercent(ltv)}` : ''}
+          status={equity > 0 ? 'green' : equity < 0 ? 'red' : 'gray'}
+        />
+      </div>
+
+      {/* Financial Snapshot */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard
+          label="Monthly Payment"
+          value={state.mortgage?.totalMonthlyPayment ? formatCurrency(state.mortgage.totalMonthlyPayment) : '—'}
+          sublabel="P&I + Escrow"
+        />
+        <MetricCard
+          label="Est. Market Rent"
+          value={state.rental?.targetRent ? formatCurrency(state.rental.targetRent) : '—'}
+          sublabel={hasData ? `Break-even: ${formatCurrency(breakEven)}` : 'Missing'}
+        />
+        <MetricCard
+          label="Est. Cash Flow"
+          value={cashFlow && hasData ? formatCurrency(cashFlow.cashFlow) : '—'}
+          sublabel="After all expenses + debt"
+          status={cashFlow && cashFlow.cashFlow >= 0 ? 'green' : cashFlow && cashFlow.cashFlow < 0 ? 'red' : undefined}
+        />
+        <MetricCard
+          label="VA Entitlement"
+          value={state.vaBenefit?.hasCOE === 'yes' ? 'On File' : 'Needed'}
+          sublabel="COE Status"
+          status={state.vaBenefit?.hasCOE === 'yes' ? 'green' : 'red'}
+        />
+      </div>
+
+      {/* Alerts Panel */}
+      <Card title="Active Alerts" status={alerts.some(a => a.severity === 'red') ? 'red' : 'yellow'}>
+        {alerts.length === 0 ? (
+          <div className="flex items-center gap-2 text-green-600">
+            <CheckCircle size={18} />
+            <span className="text-sm">All systems green</span>
+          </div>
+        ) : (
           <div className="space-y-2">
             {alerts.map((alert, i) => (
               <Link key={i} to={alert.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
                 <StatusDot status={alert.severity} />
-                <span className="text-sm text-slate-700 flex-1">{alert.message}</span>
-                <ArrowRight size={14} className="text-slate-400" />
+                <span className="text-sm text-slate-700 flex-1">{alert.text}</span>
+                <ArrowRight size={16} className="text-slate-400" />
               </Link>
             ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Monthly Payment Breakdown */}
+      {hasData && (
+        <Card title="Monthly Cost Breakdown (as Rental)">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Row label="Mortgage P&I" value={formatCurrency(cashFlow?.debtService)} />
+              <Row label="Property Taxes" value={formatCurrency(cashFlow?.taxes)} />
+              <Row label="Insurance" value={formatCurrency(cashFlow?.insurance)} />
+              <Row label="Flood Insurance" value={formatCurrency(cashFlow?.flood)} />
+              <Row label="HOA" value={formatCurrency(cashFlow?.hoa)} />
+              <Row label="Property Mgmt" value={formatCurrency(cashFlow?.mgmtFee)} sub={`${state.rental?.managementFeePercent}%`} />
+              <Row label="Maintenance Reserve" value={formatCurrency(cashFlow?.maintenance)} sub={`${state.rental?.maintenanceReservePercent}%`} />
+              <Row label="CapEx Reserve" value={formatCurrency(cashFlow?.capex)} sub={`${state.rental?.capexReservePercent}%`} />
+              <div className="border-t border-slate-200 pt-2 mt-2">
+                <Row label="Total Monthly Cost" value={formatCurrency((cashFlow?.totalOpEx || 0) + (cashFlow?.debtService || 0))} bold />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Row label="Gross Rent" value={formatCurrency(cashFlow?.grossRent)} />
+              <Row label="Vacancy Loss" value={`(${formatCurrency(cashFlow?.vacancyLoss)})`} sub={`${state.rental?.vacancyRatePercent}%`} />
+              <Row label="Effective Gross Income" value={formatCurrency(cashFlow?.effectiveGross)} />
+              <Row label="Total Operating Expenses" value={`(${formatCurrency(cashFlow?.totalOpEx)})`} />
+              <Row label="Net Operating Income" value={formatCurrency(cashFlow?.noi)} />
+              <Row label="Debt Service" value={`(${formatCurrency(cashFlow?.debtService)})`} />
+              <div className="border-t border-slate-200 pt-2 mt-2">
+                <Row
+                  label="Net Cash Flow"
+                  value={formatCurrency(cashFlow?.cashFlow)}
+                  bold
+                  color={cashFlow?.cashFlow >= 0 ? 'text-green-600' : 'text-red-600'}
+                />
+              </div>
+            </div>
           </div>
         </Card>
       )}
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Home size={16} className="text-slate-400" />
-            <span className="text-xs font-medium text-slate-500">Property Status</span>
-          </div>
-          <p className="text-lg font-bold text-slate-900">
-            {propertyStatusLabels[state.property.status] || 'Not Set'}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp size={16} className="text-slate-400" />
-            <span className="text-xs font-medium text-slate-500">Estimated Value</span>
-          </div>
-          <p className="text-lg font-bold text-slate-900">
-            {latestValue ? formatCurrency(latestValue) : '—'}
-          </p>
-          {purchasePrice > 0 && latestValue > 0 && latestValue !== purchasePrice && (
-            <p className={`text-xs ${latestValue > purchasePrice ? 'text-green-600' : 'text-red-600'}`}>
-              {latestValue > purchasePrice ? '+' : ''}{formatCurrency(latestValue - purchasePrice)} from purchase
-            </p>
-          )}
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <DollarSign size={16} className="text-slate-400" />
-            <span className="text-xs font-medium text-slate-500">Estimated Equity</span>
-          </div>
-          <p className="text-lg font-bold text-slate-900">
-            {equity ? formatCurrency(equity) : '—'}
-          </p>
-          {ltv > 0 && (
-            <p className="text-xs text-slate-500">LTV: {formatPercent(ltv)}</p>
-          )}
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <DollarSign size={16} className={cashFlow.cashFlow >= 0 ? 'text-green-500' : 'text-red-500'} />
-            <span className="text-xs font-medium text-slate-500">Est. Cash Flow</span>
-          </div>
-          <p className={`text-lg font-bold ${hasFinancials ? (cashFlow.cashFlow >= 0 ? 'text-green-700' : 'text-red-700') : 'text-slate-900'}`}>
-            {hasFinancials ? formatCurrency(cashFlow.cashFlow) : '—'}
-          </p>
-          {hasFinancials && (
-            <p className="text-xs text-slate-500">per month</p>
-          )}
-        </div>
-      </div>
-
-      {/* Two Column Layout */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Monthly Payment Breakdown */}
-        <Card title="Monthly Payment Breakdown">
-          <div className="space-y-2">
-            {[
-              { label: 'Principal & Interest', value: state.mortgage.monthlyPI },
-              { label: 'Property Taxes', value: parseCurrency(state.taxesInsurance.annualPropertyTax) / 12 || '' },
-              { label: 'Insurance', value: parseCurrency(state.taxesInsurance.insurancePremium) / 12 || '' },
-              { label: 'Flood Insurance', value: parseCurrency(state.taxesInsurance.floodPremium) / 12 || '' },
-              { label: 'HOA Dues', value: state.property.hoaDues },
-            ].map(item => (
-              <div key={item.label} className="flex justify-between items-center py-1 border-b border-slate-50">
-                <span className="text-sm text-slate-600">{item.label}</span>
-                <span className="text-sm font-medium text-slate-900">
-                  {item.value ? formatCurrency(item.value) : <span className="text-slate-400">—</span>}
-                </span>
-              </div>
-            ))}
-            <div className="flex justify-between items-center py-1 pt-2 border-t border-slate-200">
-              <span className="text-sm font-semibold text-slate-800">Total Monthly</span>
-              <span className="text-sm font-bold text-slate-900">
-                {state.mortgage.totalMonthlyPayment ? formatCurrency(state.mortgage.totalMonthlyPayment) : '—'}
-              </span>
-            </div>
-          </div>
-        </Card>
-
-        {/* Rental Snapshot */}
-        <Card title="Rental Snapshot">
-          <div className="space-y-2">
-            {[
-              { label: 'Target Monthly Rent', value: state.rental.targetRent, status: state.rental.targetRent ? 'green' : 'red' },
-              { label: 'Break-Even Rent', value: hasFinancials ? breakEven : '', note: 'Min rent to cover all costs' },
-              { label: 'Est. Monthly Cash Flow', value: hasFinancials ? cashFlow.cashFlow : '' },
-              { label: 'Est. Monthly NOI', value: hasFinancials ? cashFlow.noi : '' },
-              { label: 'Vacancy Assumption', value: state.rental.vacancyRatePercent ? `${state.rental.vacancyRatePercent}%` : '8%' },
-              { label: 'Management Fee', value: state.rental.managementFeePercent ? `${state.rental.managementFeePercent}%` : '10%' },
-            ].map(item => (
-              <div key={item.label} className="flex justify-between items-center py-1 border-b border-slate-50">
-                <div>
-                  <span className="text-sm text-slate-600">{item.label}</span>
-                  {item.note && <p className="text-xs text-slate-400">{item.note}</p>}
-                </div>
-                <span className="text-sm font-medium text-slate-900">
-                  {item.value ? (typeof item.value === 'string' && item.value.includes('%') ? item.value : formatCurrency(item.value)) : <span className="text-slate-400">—</span>}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Key Dates */}
-        <Card title="Key Dates & Deadlines">
-          <div className="space-y-2">
-            {[
-              { label: 'Insurance Renewal', value: state.taxesInsurance.insuranceRenewalDate || 'Unknown', severity: state.taxesInsurance.insuranceRenewalDate ? 'green' : 'yellow' },
-              { label: 'Property Tax Due (FL)', value: 'Nov 2026 (4% discount)', severity: 'yellow' },
-              { label: 'Homestead Filing Window', value: 'Jan 1 – Mar 1 annually', severity: 'yellow' },
-              { label: 'Hurricane Season', value: 'Jun 1 – Nov 30', severity: 'yellow' },
-              { label: 'Lease Expiration', value: state.tenant.leaseEnd || 'N/A', severity: 'gray' },
-              { label: 'PCS Date', value: state.operations.expectedPCSDate || 'Unknown', severity: state.operations.expectedPCSDate ? 'yellow' : 'gray' },
-            ].map(item => (
-              <div key={item.label} className="flex items-center gap-3 py-1 border-b border-slate-50">
-                <StatusDot status={item.severity} />
-                <span className="text-sm text-slate-600 flex-1">{item.label}</span>
-                <span className="text-sm text-slate-800">{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* VA Entitlement Quick View */}
-        <Card title="VA Entitlement Status">
-          {state.vaBenefit.hasCOE === 'yes' ? (
-            <div className="space-y-2">
-              <div className="flex justify-between py-1">
-                <span className="text-sm text-slate-600">COE Available</span>
-                <StatusBadge status="green">Yes</StatusBadge>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-sm text-slate-600">Entitlement Charged</span>
-                <span className="text-sm font-medium">
-                  {state.vaBenefit.entitlementCharged ? formatCurrency(state.vaBenefit.entitlementCharged) : '—'}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-4">
-              <Shield size={32} className="mx-auto text-slate-300 mb-2" />
-              <p className="text-sm text-slate-500">COE not yet obtained</p>
-              <Link to="/va-tracker" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                Set up VA Tracker →
-              </Link>
-            </div>
-          )}
-        </Card>
-      </div>
-
       {/* Top 5 Actions */}
-      <Card title="Recommended Actions" status="yellow">
+      <Card title="Top Actions Needed">
         <div className="space-y-3">
-          {[
-            { priority: 1, action: 'Complete the data intake form', link: '/intake', done: completeness.percent === 100 },
-            { priority: 2, action: 'Obtain VA Certificate of Eligibility', link: '/va-tracker', done: state.vaBenefit.hasCOE === 'yes' },
-            { priority: 3, action: 'Verify flood zone and insurance coverage', link: '/insurance', done: !!state.taxesInsurance.floodZoneDesignation },
-            { priority: 4, action: 'Check HOA rental restrictions', link: '/property', done: !!state.property.hoaRentalRestrictions },
-            { priority: 5, action: 'Get landlord insurance quote', link: '/insurance', done: false },
-          ].map(item => (
-            <Link key={item.priority} to={item.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${item.done ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                {item.done ? '✓' : item.priority}
-              </span>
-              <span className={`text-sm flex-1 ${item.done ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
-                {item.action}
-              </span>
-              <ArrowRight size={14} className="text-slate-400" />
-            </Link>
-          ))}
+          {completeness.percent < 100 && (
+            <ActionItem num={1} text="Complete the data intake form" link="/intake" severity="red" />
+          )}
+          {state.vaBenefit?.hasCOE !== 'yes' && (
+            <ActionItem num={completeness.percent < 100 ? 2 : 1} text="Obtain VA Certificate of Eligibility (COE)" link="/va-tracker" severity="red" />
+          )}
+          {!state.taxesInsurance?.hasFloodInsurance && (
+            <ActionItem num={3} text="Verify flood zone and insurance coverage" link="/insurance" severity="yellow" />
+          )}
+          {!state.property?.hoaRentalRestrictions && (
+            <ActionItem num={4} text="Check HOA rental restrictions (request CC&Rs)" link="/compliance" severity="yellow" />
+          )}
+          {!state.propertyManager?.companyName && (
+            <ActionItem num={5} text="Research and interview property managers" link="/pm-oversight" severity="yellow" />
+          )}
         </div>
       </Card>
     </div>
+  );
+}
+
+function Row({ label, value, sub, bold, color }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className={`text-sm ${bold ? 'font-semibold text-slate-900' : 'text-slate-600'}`}>{label}</span>
+      <div className="text-right">
+        <span className={`text-sm ${bold ? 'font-semibold' : 'font-medium'} ${color || 'text-slate-900'}`}>{value}</span>
+        {sub && <span className="text-xs text-slate-400 ml-1">({sub})</span>}
+      </div>
+    </div>
+  );
+}
+
+function ActionItem({ num, text, link, severity }) {
+  return (
+    <Link to={link} className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${severity === 'red' ? 'bg-red-500' : 'bg-yellow-500'}`}>
+        {num}
+      </div>
+      <span className="text-sm text-slate-700 flex-1">{text}</span>
+      <ArrowRight size={16} className="text-slate-400" />
+    </Link>
   );
 }
