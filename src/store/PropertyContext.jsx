@@ -259,6 +259,12 @@ function reducer(state, action) {
         rentReadiness: { ...state.rentReadiness, [action.key]: action.value },
         lastUpdated: new Date().toISOString(),
       };
+    case 'IMPORT_DATA':
+      return {
+        ...defaultState,
+        ...action.data,
+        lastUpdated: new Date().toISOString(),
+      };
     case 'RESET':
       return defaultState;
     default:
