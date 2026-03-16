@@ -26,19 +26,19 @@ export default function IntakeForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Data Intake</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Data Intake</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
           Fill in your property data to unlock all analysis modules. Critical fields: {completeness.filled}/{completeness.total} complete.
         </p>
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-slate-700">Overall Completeness</span>
-          <span className="text-sm font-bold text-slate-900">{completeness.percent}%</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Overall Completeness</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{completeness.percent}%</span>
         </div>
-        <div className="w-full bg-slate-200 rounded-full h-2">
+        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all duration-500 ${completeness.percent === 100 ? 'bg-green-500' : completeness.percent > 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
             style={{ width: `${completeness.percent}%` }}
@@ -55,7 +55,7 @@ export default function IntakeForm() {
             className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeSection === s.id
                 ? 'bg-blue-600 text-white'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             {s.label}

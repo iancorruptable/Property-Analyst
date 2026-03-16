@@ -56,22 +56,22 @@ export default function Alerts() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Alerts & Deadlines</h1>
-        <p className="text-sm text-slate-500 mt-1">Module 15 — Consolidated alert center</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Alerts & Deadlines</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 15 — Consolidated alert center</p>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold text-red-700">{red.length}</p>
-          <p className="text-xs text-red-600">Urgent</p>
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold text-red-700 dark:text-red-400">{red.length}</p>
+          <p className="text-xs text-red-600 dark:text-red-400">Urgent</p>
         </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold text-yellow-700">{yellow.length}</p>
-          <p className="text-xs text-yellow-600">Watch</p>
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">{yellow.length}</p>
+          <p className="text-xs text-yellow-600 dark:text-yellow-400">Watch</p>
         </div>
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold text-green-700">{green.length}</p>
-          <p className="text-xs text-green-600">On Track</p>
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold text-green-700 dark:text-green-400">{green.length}</p>
+          <p className="text-xs text-green-600 dark:text-green-400">On Track</p>
         </div>
       </div>
 
@@ -79,11 +79,11 @@ export default function Alerts() {
         <Card title="Urgent — Immediate Action Required" status="red">
           <div className="space-y-2">
             {red.map((a, i) => (
-              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-red-50 transition-colors">
+              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                 <StatusDot status="red" />
-                <span className="text-sm text-slate-700 flex-1">{a.message}</span>
-                <span className="text-xs text-slate-400">{a.deadline}</span>
-                <ArrowRight size={14} className="text-slate-400" />
+                <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{a.message}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">{a.deadline}</span>
+                <ArrowRight size={14} className="text-slate-400 dark:text-slate-500" />
               </Link>
             ))}
           </div>
@@ -94,11 +94,11 @@ export default function Alerts() {
         <Card title="Watch — Action Needed Soon" status="yellow">
           <div className="space-y-2">
             {yellow.map((a, i) => (
-              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-yellow-50 transition-colors">
+              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
                 <StatusDot status="yellow" />
-                <span className="text-sm text-slate-700 flex-1">{a.message}</span>
-                <span className="text-xs text-slate-400">{a.deadline}</span>
-                <ArrowRight size={14} className="text-slate-400" />
+                <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{a.message}</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">{a.deadline}</span>
+                <ArrowRight size={14} className="text-slate-400 dark:text-slate-500" />
               </Link>
             ))}
           </div>
@@ -111,7 +111,7 @@ export default function Alerts() {
             {green.map((a, i) => (
               <div key={i} className="flex items-center gap-3 p-2">
                 <StatusDot status="green" />
-                <span className="text-sm text-slate-600">{a.message}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">{a.message}</span>
               </div>
             ))}
           </div>
@@ -122,17 +122,17 @@ export default function Alerts() {
         <Card title="Monthly Recurring">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-slate-200">
-                <th className="text-left py-2 text-slate-600 font-medium">Day</th>
-                <th className="text-left py-2 text-slate-600 font-medium">Item</th>
-                <th className="text-left py-2 text-slate-600 font-medium">Responsible</th>
+              <thead><tr className="border-b border-slate-200 dark:border-slate-700">
+                <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Day</th>
+                <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Item</th>
+                <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Responsible</th>
               </tr></thead>
               <tbody>
                 {recurringMonthly.map((r, i) => (
-                  <tr key={i} className="border-b border-slate-50">
-                    <td className="py-2 text-slate-700 font-medium">{r.day}</td>
-                    <td className="py-2 text-slate-700">{r.item}</td>
-                    <td className="py-2 text-slate-500">{r.responsible}</td>
+                  <tr key={i} className="border-b border-slate-50 dark:border-slate-700/50">
+                    <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{r.day}</td>
+                    <td className="py-2 text-slate-700 dark:text-slate-300">{r.item}</td>
+                    <td className="py-2 text-slate-500 dark:text-slate-400">{r.responsible}</td>
                   </tr>
                 ))}
               </tbody>
@@ -143,17 +143,17 @@ export default function Alerts() {
         <Card title="Annual Deadlines">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-slate-200">
-                <th className="text-left py-2 text-slate-600 font-medium">Timing</th>
-                <th className="text-left py-2 text-slate-600 font-medium">Item</th>
-                <th className="text-left py-2 text-slate-600 font-medium">Deadline</th>
+              <thead><tr className="border-b border-slate-200 dark:border-slate-700">
+                <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Timing</th>
+                <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Item</th>
+                <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Deadline</th>
               </tr></thead>
               <tbody>
                 {annualDeadlines.map((d, i) => (
-                  <tr key={i} className="border-b border-slate-50">
-                    <td className="py-2 text-slate-700 font-medium">{d.month}</td>
-                    <td className="py-2 text-slate-700">{d.item}</td>
-                    <td className="py-2 text-slate-500">{d.deadline}</td>
+                  <tr key={i} className="border-b border-slate-50 dark:border-slate-700/50">
+                    <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{d.month}</td>
+                    <td className="py-2 text-slate-700 dark:text-slate-300">{d.item}</td>
+                    <td className="py-2 text-slate-500 dark:text-slate-400">{d.deadline}</td>
                   </tr>
                 ))}
               </tbody>

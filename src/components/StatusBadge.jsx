@@ -1,10 +1,10 @@
 export default function StatusBadge({ status, children }) {
   const colors = {
-    green: 'bg-green-100 text-green-800 border border-green-300',
-    yellow: 'bg-yellow-100 text-yellow-800 border border-yellow-300',
-    red: 'bg-red-100 text-red-800 border border-red-300',
-    gray: 'bg-gray-100 text-gray-600 border border-gray-300',
-    blue: 'bg-blue-100 text-blue-800 border border-blue-300',
+    green: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border border-green-300 dark:border-green-700',
+    yellow: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-700',
+    red: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border border-red-300 dark:border-red-700',
+    gray: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600',
+    blue: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700',
   };
 
   return (

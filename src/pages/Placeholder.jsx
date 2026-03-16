@@ -18,13 +18,13 @@ export default function Placeholder({ path }) {
 
   return (
     <div className="max-w-2xl mx-auto text-center py-12">
-      <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <span className="text-2xl font-bold text-blue-600">{info.num}</span>
+      <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{info.num}</span>
       </div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">{info.title}</h1>
-      <p className="text-slate-500 mb-6">{info.desc}</p>
-      <div className="bg-slate-50 rounded-xl border border-slate-200 p-6 text-left">
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">This module is ready for expansion. Priority modules currently active:</h3>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">{info.title}</h1>
+      <p className="text-slate-500 dark:text-slate-400 mb-6">{info.desc}</p>
+      <div className="bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 text-left">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">This module is ready for expansion. Priority modules currently active:</h3>
         <div className="space-y-2">
           {[
             { label: 'Executive Dashboard', path: '/', active: true },
@@ -36,7 +36,7 @@ export default function Placeholder({ path }) {
             { label: 'Rent-Readiness Checklist', path: '/rent-readiness', active: true },
             { label: 'Alerts & Deadlines', path: '/alerts', active: true },
           ].map(item => (
-            <Link key={item.path} to={item.path} className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800">
+            <Link key={item.path} to={item.path} className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
               <span className="w-2 h-2 rounded-full bg-green-500" />
               {item.label}
             </Link>

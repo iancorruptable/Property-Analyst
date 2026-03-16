@@ -1,10 +1,10 @@
 export default function FormField({ label, type = 'text', value, onChange, placeholder, options, prefix, suffix, helpText, required }) {
-  const baseClass = 'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+  const baseClass = 'w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
 
   if (type === 'select') {
     return (
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">
+        <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
         <select value={value || ''} onChange={e => onChange(e.target.value)} className={baseClass}>
@@ -15,7 +15,7 @@ export default function FormField({ label, type = 'text', value, onChange, place
             </option>
           ))}
         </select>
-        {helpText && <p className="text-xs text-slate-400 mt-1">{helpText}</p>}
+        {helpText && <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{helpText}</p>}
       </div>
     );
   }
@@ -23,7 +23,7 @@ export default function FormField({ label, type = 'text', value, onChange, place
   if (type === 'textarea') {
     return (
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">
+        <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
         <textarea
@@ -33,19 +33,19 @@ export default function FormField({ label, type = 'text', value, onChange, place
           rows={3}
           className={baseClass}
         />
-        {helpText && <p className="text-xs text-slate-400 mt-1">{helpText}</p>}
+        {helpText && <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{helpText}</p>}
       </div>
     );
   }
 
   if (type === 'checkbox') {
     return (
-      <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+      <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
         <input
           type="checkbox"
           checked={!!value}
           onChange={e => onChange(e.target.checked)}
-          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
         />
         {label}
       </label>
@@ -54,12 +54,12 @@ export default function FormField({ label, type = 'text', value, onChange, place
 
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
+      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative">
         {prefix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">{prefix}</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm">{prefix}</span>
         )}
         <input
           type={type}
@@ -69,10 +69,10 @@ export default function FormField({ label, type = 'text', value, onChange, place
           className={`${baseClass} ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-10' : ''}`}
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">{suffix}</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm">{suffix}</span>
         )}
       </div>
-      {helpText && <p className="text-xs text-slate-400 mt-1">{helpText}</p>}
+      {helpText && <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{helpText}</p>}
     </div>
   );
 }

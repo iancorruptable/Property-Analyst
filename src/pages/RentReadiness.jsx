@@ -67,18 +67,18 @@ export default function RentReadiness() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Rent-Readiness Tracker</h1>
-          <p className="text-sm text-slate-500 mt-1">Module 6 — Is the property ready to rent?</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Rent-Readiness Tracker</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 6 — Is the property ready to rent?</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-slate-900">{completedItems}/{totalItems}</p>
-          <p className="text-xs text-slate-500">{percent}% complete</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{completedItems}/{totalItems}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{percent}% complete</p>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-        <div className="w-full bg-slate-200 rounded-full h-3">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
           <div
             className={`h-3 rounded-full transition-all duration-500 ${percent === 100 ? 'bg-green-500' : percent > 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
             style={{ width: `${percent}%` }}
@@ -102,18 +102,18 @@ export default function RentReadiness() {
                   <button
                     key={item.key}
                     onClick={() => toggle(item.key)}
-                    className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left"
                   >
                     {isDone ? (
                       <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" />
                     ) : (
-                      <Circle size={20} className="text-slate-300 flex-shrink-0" />
+                      <Circle size={20} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />
                     )}
-                    <span className={`text-sm ${isDone ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+                    <span className={`text-sm ${isDone ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-700 dark:text-slate-300'}`}>
                       {item.label}
                     </span>
                     {isDone && readiness[item.key]?.date && (
-                      <span className="text-xs text-slate-400 ml-auto">{readiness[item.key].date}</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">{readiness[item.key].date}</span>
                     )}
                   </button>
                 );

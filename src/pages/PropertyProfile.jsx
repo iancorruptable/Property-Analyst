@@ -12,18 +12,18 @@ export default function PropertyProfile() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Property Profile</h1>
-        <p className="text-sm text-slate-500 mt-1">Module 2 — Permanent property record</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Property Profile</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 2 — Permanent property record</p>
       </div>
 
       <Card title="Property Identification">
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <div className="text-sm text-slate-600">Address</div>
-            <div className="text-lg font-semibold text-slate-900">{p.address}</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">Address</div>
+            <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">{p.address}</div>
           </div>
-          <div><span className="text-xs text-slate-500">County:</span> <span className="text-sm font-medium">{p.county}</span></div>
-          <div><span className="text-xs text-slate-500">Status:</span> <span className="text-sm font-medium capitalize">{p.status?.replace(/-/g, ' ') || 'Not set'}</span></div>
+          <div><span className="text-xs text-slate-500 dark:text-slate-400">County:</span> <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{p.county}</span></div>
+          <div><span className="text-xs text-slate-500 dark:text-slate-400">Status:</span> <span className="text-sm font-medium text-slate-900 dark:text-slate-100 capitalize">{p.status?.replace(/-/g, ' ') || 'Not set'}</span></div>
         </div>
       </Card>
 
@@ -73,9 +73,9 @@ export default function PropertyProfile() {
               ['Monthly P&I', m.monthlyPI ? `$${m.monthlyPI}` : '—'],
               ['Servicer', m.servicer || '—'],
             ].map(([label, value]) => (
-              <div key={label} className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-600">{label}</span>
-                <span className="font-medium text-slate-900">{value}</span>
+              <div key={label} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50">
+                <span className="text-slate-600 dark:text-slate-400">{label}</span>
+                <span className="font-medium text-slate-900 dark:text-slate-100">{value}</span>
               </div>
             ))}
           </div>

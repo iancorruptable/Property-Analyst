@@ -7,12 +7,12 @@ import { AlertTriangle, ArrowRight, CheckCircle, TrendingUp, TrendingDown } from
 
 function MetricCard({ label, value, sublabel, status }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <p className="text-xs text-slate-500 font-medium">{label}</p>
-      <p className={`text-2xl font-bold mt-1 ${status === 'red' ? 'text-red-600' : status === 'green' ? 'text-green-600' : 'text-slate-900'}`}>
+    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</p>
+      <p className={`text-2xl font-bold mt-1 ${status === 'red' ? 'text-red-600 dark:text-red-400' : status === 'green' ? 'text-green-600 dark:text-green-400' : 'text-slate-900 dark:text-slate-100'}`}>
         {value}
       </p>
-      {sublabel && <p className="text-xs text-slate-400 mt-0.5">{sublabel}</p>}
+      {sublabel && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{sublabel}</p>}
     </div>
   );
 }
@@ -66,28 +66,28 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Executive Dashboard</h1>
-          <p className="text-sm text-slate-500 mt-1">9577 Naples Lane, Navarre, FL 32566</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Executive Dashboard</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">9577 Naples Lane, Navarre, FL 32566</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-slate-400">Last Updated</p>
-          <p className="text-sm text-slate-600">{new Date(state.lastUpdated).toLocaleDateString()}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">Last Updated</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">{new Date(state.lastUpdated).toLocaleDateString()}</p>
         </div>
       </div>
 
       {/* Data Completeness Bar */}
       {completeness.percent < 100 && (
         <Link to="/intake" className="block">
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4 hover:bg-amber-100 transition-colors">
-            <AlertTriangle className="text-amber-600 flex-shrink-0" size={24} />
+          <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-4 flex items-center gap-4 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors">
+            <AlertTriangle className="text-amber-600 dark:text-amber-400 flex-shrink-0" size={24} />
             <div className="flex-1">
-              <p className="text-sm font-semibold text-amber-900">Data Intake Required</p>
-              <p className="text-xs text-amber-700 mt-0.5">{completeness.filled} of {completeness.total} critical fields completed</p>
-              <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">Data Intake Required</p>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">{completeness.filled} of {completeness.total} critical fields completed</p>
+              <div className="w-full bg-amber-200 dark:bg-amber-800 rounded-full h-2 mt-2">
                 <div className="bg-amber-600 h-2 rounded-full transition-all" style={{ width: `${completeness.percent}%` }} />
               </div>
             </div>
-            <ArrowRight className="text-amber-600" size={20} />
+            <ArrowRight className="text-amber-600 dark:text-amber-400" size={20} />
           </div>
         </Link>
       )}
@@ -148,17 +148,17 @@ export default function Dashboard() {
       {/* Alerts Panel */}
       <Card title="Active Alerts" status={alerts.some(a => a.severity === 'red') ? 'red' : 'yellow'}>
         {alerts.length === 0 ? (
-          <div className="flex items-center gap-2 text-green-600">
+          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
             <CheckCircle size={18} />
             <span className="text-sm">All systems green</span>
           </div>
         ) : (
           <div className="space-y-2">
             {alerts.map((alert, i) => (
-              <Link key={i} to={alert.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+              <Link key={i} to={alert.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                 <StatusDot status={alert.severity} />
-                <span className="text-sm text-slate-700 flex-1">{alert.text}</span>
-                <ArrowRight size={16} className="text-slate-400" />
+                <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{alert.text}</span>
+                <ArrowRight size={16} className="text-slate-400 dark:text-slate-500" />
               </Link>
             ))}
           </div>
@@ -178,7 +178,7 @@ export default function Dashboard() {
               <Row label="Property Mgmt" value={formatCurrency(cashFlow?.mgmtFee)} sub={`${state.rental?.managementFeePercent}%`} />
               <Row label="Maintenance Reserve" value={formatCurrency(cashFlow?.maintenance)} sub={`${state.rental?.maintenanceReservePercent}%`} />
               <Row label="CapEx Reserve" value={formatCurrency(cashFlow?.capex)} sub={`${state.rental?.capexReservePercent}%`} />
-              <div className="border-t border-slate-200 pt-2 mt-2">
+              <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
                 <Row label="Total Monthly Cost" value={formatCurrency((cashFlow?.totalOpEx || 0) + (cashFlow?.debtService || 0))} bold />
               </div>
             </div>
@@ -189,12 +189,12 @@ export default function Dashboard() {
               <Row label="Total Operating Expenses" value={`(${formatCurrency(cashFlow?.totalOpEx)})`} />
               <Row label="Net Operating Income" value={formatCurrency(cashFlow?.noi)} />
               <Row label="Debt Service" value={`(${formatCurrency(cashFlow?.debtService)})`} />
-              <div className="border-t border-slate-200 pt-2 mt-2">
+              <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
                 <Row
                   label="Net Cash Flow"
                   value={formatCurrency(cashFlow?.cashFlow)}
                   bold
-                  color={cashFlow?.cashFlow >= 0 ? 'text-green-600' : 'text-red-600'}
+                  color={cashFlow?.cashFlow >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}
                 />
               </div>
             </div>
@@ -229,10 +229,10 @@ export default function Dashboard() {
 function Row({ label, value, sub, bold, color }) {
   return (
     <div className="flex items-center justify-between">
-      <span className={`text-sm ${bold ? 'font-semibold text-slate-900' : 'text-slate-600'}`}>{label}</span>
+      <span className={`text-sm ${bold ? 'font-semibold text-slate-900 dark:text-slate-100' : 'text-slate-600 dark:text-slate-400'}`}>{label}</span>
       <div className="text-right">
-        <span className={`text-sm ${bold ? 'font-semibold' : 'font-medium'} ${color || 'text-slate-900'}`}>{value}</span>
-        {sub && <span className="text-xs text-slate-400 ml-1">({sub})</span>}
+        <span className={`text-sm ${bold ? 'font-semibold' : 'font-medium'} ${color || 'text-slate-900 dark:text-slate-100'}`}>{value}</span>
+        {sub && <span className="text-xs text-slate-400 dark:text-slate-500 ml-1">({sub})</span>}
       </div>
     </div>
   );
@@ -240,12 +240,12 @@ function Row({ label, value, sub, bold, color }) {
 
 function ActionItem({ num, text, link, severity }) {
   return (
-    <Link to={link} className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+    <Link to={link} className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
       <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${severity === 'red' ? 'bg-red-500' : 'bg-yellow-500'}`}>
         {num}
       </div>
-      <span className="text-sm text-slate-700 flex-1">{text}</span>
-      <ArrowRight size={16} className="text-slate-400" />
+      <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{text}</span>
+      <ArrowRight size={16} className="text-slate-400 dark:text-slate-500" />
     </Link>
   );
 }

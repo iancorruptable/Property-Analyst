@@ -15,11 +15,11 @@ export default function VATracker() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">VA Entitlement Tracker</h1>
-        <p className="text-sm text-slate-500 mt-1">Module 3 — Track VA benefit usage and future buying power</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">VA Entitlement Tracker</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 3 — Track VA benefit usage and future buying power</p>
       </div>
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
+      <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4 text-sm text-yellow-800 dark:text-yellow-300">
         <strong>Important:</strong> VA entitlement calculations are estimates only. Always confirm with your COE and a VA-approved lender before making purchase decisions.
       </div>
 
@@ -34,9 +34,9 @@ export default function VATracker() {
             { label: 'Entitlement Charged', value: state.vaBenefit.entitlementCharged ? formatCurrency(state.vaBenefit.entitlementCharged) : va ? formatCurrency(va.entitlementCharged) + ' (est.)' : 'Missing' },
             { label: 'Disability Rating', value: state.vaBenefit.disabilityRating === 'yes' ? `Yes (${state.vaBenefit.disabilityPercent || '?'}%)` : state.vaBenefit.disabilityRating || 'Unknown' },
           ].map(item => (
-            <div key={item.label} className="flex justify-between items-center py-2 border-b border-slate-50">
-              <span className="text-sm text-slate-600">{item.label}</span>
-              <span className="text-sm font-medium text-slate-900 flex items-center gap-2">
+            <div key={item.label} className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-700/50">
+              <span className="text-sm text-slate-600 dark:text-slate-400">{item.label}</span>
+              <span className="text-sm font-medium text-slate-900 dark:text-slate-100 flex items-center gap-2">
                 {item.value}
                 {item.status && <StatusBadge status={item.status}>{item.status === 'green' ? '✓' : '!'}</StatusBadge>}
               </span>
@@ -52,49 +52,49 @@ export default function VATracker() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-2 text-slate-600 font-medium">Step</th>
-                    <th className="text-left py-2 text-slate-600 font-medium">Formula</th>
-                    <th className="text-right py-2 text-slate-600 font-medium">Value</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Step</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Formula</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Value</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-slate-50">
-                    <td className="py-2 text-slate-700">A. Original VA Loan</td>
-                    <td className="py-2 text-slate-500">Input</td>
-                    <td className="py-2 text-right font-medium">{formatCurrency(originalLoan)}</td>
+                  <tr className="border-b border-slate-50 dark:border-slate-700/50">
+                    <td className="py-2 text-slate-700 dark:text-slate-300">A. Original VA Loan</td>
+                    <td className="py-2 text-slate-500 dark:text-slate-400">Input</td>
+                    <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(originalLoan)}</td>
                   </tr>
-                  <tr className="border-b border-slate-50">
-                    <td className="py-2 text-slate-700">B. Entitlement Charged</td>
-                    <td className="py-2 text-slate-500">25% x A</td>
-                    <td className="py-2 text-right font-medium">{formatCurrency(va.entitlementCharged)}</td>
+                  <tr className="border-b border-slate-50 dark:border-slate-700/50">
+                    <td className="py-2 text-slate-700 dark:text-slate-300">B. Entitlement Charged</td>
+                    <td className="py-2 text-slate-500 dark:text-slate-400">25% x A</td>
+                    <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(va.entitlementCharged)}</td>
                   </tr>
-                  <tr className="border-b border-slate-50">
-                    <td className="py-2 text-slate-700">C. County Loan Limit (2026)</td>
-                    <td className="py-2 text-slate-500">Standard</td>
-                    <td className="py-2 text-right font-medium">{formatCurrency(countyLimit)}</td>
+                  <tr className="border-b border-slate-50 dark:border-slate-700/50">
+                    <td className="py-2 text-slate-700 dark:text-slate-300">C. County Loan Limit (2026)</td>
+                    <td className="py-2 text-slate-500 dark:text-slate-400">Standard</td>
+                    <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(countyLimit)}</td>
                   </tr>
-                  <tr className="border-b border-slate-50">
-                    <td className="py-2 text-slate-700">D. Max Guaranty</td>
-                    <td className="py-2 text-slate-500">25% x C</td>
-                    <td className="py-2 text-right font-medium">{formatCurrency(va.maxGuaranty)}</td>
+                  <tr className="border-b border-slate-50 dark:border-slate-700/50">
+                    <td className="py-2 text-slate-700 dark:text-slate-300">D. Max Guaranty</td>
+                    <td className="py-2 text-slate-500 dark:text-slate-400">25% x C</td>
+                    <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(va.maxGuaranty)}</td>
                   </tr>
-                  <tr className="border-b border-slate-50 bg-blue-50">
-                    <td className="py-2 text-blue-800 font-semibold">E. Remaining Entitlement</td>
-                    <td className="py-2 text-blue-600">D - B</td>
-                    <td className="py-2 text-right font-bold text-blue-800">{formatCurrency(va.remaining)}</td>
+                  <tr className="border-b border-slate-50 dark:border-slate-700/50 bg-blue-50 dark:bg-blue-900/30">
+                    <td className="py-2 text-blue-800 dark:text-blue-300 font-semibold">E. Remaining Entitlement</td>
+                    <td className="py-2 text-blue-600 dark:text-blue-400">D - B</td>
+                    <td className="py-2 text-right font-bold text-blue-800 dark:text-blue-300">{formatCurrency(va.remaining)}</td>
                   </tr>
-                  <tr className="bg-green-50">
-                    <td className="py-2 text-green-800 font-semibold">F. Zero-Down Buying Power</td>
-                    <td className="py-2 text-green-600">E x 4</td>
-                    <td className="py-2 text-right font-bold text-green-800">{formatCurrency(va.zeroDownPower)}</td>
+                  <tr className="bg-green-50 dark:bg-green-900/30">
+                    <td className="py-2 text-green-800 dark:text-green-300 font-semibold">F. Zero-Down Buying Power</td>
+                    <td className="py-2 text-green-600 dark:text-green-400">E x 4</td>
+                    <td className="py-2 text-right font-bold text-green-800 dark:text-green-300">{formatCurrency(va.zeroDownPower)}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-500 text-center py-4">Enter your original VA loan amount in the Intake Form to calculate entitlement.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">Enter your original VA loan amount in the Intake Form to calculate entitlement.</p>
         )}
       </Card>
 
@@ -104,11 +104,11 @@ export default function VATracker() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-2 text-slate-600 font-medium">Future Price</th>
-                  <th className="text-right py-2 text-slate-600 font-medium">Zero-Down?</th>
-                  <th className="text-right py-2 text-slate-600 font-medium">Est. Down Payment</th>
-                  <th className="text-left py-2 pl-4 text-slate-600 font-medium">Notes</th>
+                <tr className="border-b border-slate-200 dark:border-slate-700">
+                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Future Price</th>
+                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Zero-Down?</th>
+                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Est. Down Payment</th>
+                  <th className="text-left py-2 pl-4 text-slate-600 dark:text-slate-400 font-medium">Notes</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,17 +116,17 @@ export default function VATracker() {
                   const dp = calcDownPayment(price, va.zeroDownPower);
                   const zeroDown = dp === 0;
                   return (
-                    <tr key={price} className="border-b border-slate-50">
-                      <td className="py-2 text-slate-700 font-medium">{formatCurrency(price)}</td>
+                    <tr key={price} className="border-b border-slate-50 dark:border-slate-700/50">
+                      <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{formatCurrency(price)}</td>
                       <td className="py-2 text-right">
                         <StatusBadge status={zeroDown ? 'green' : 'yellow'}>
                           {zeroDown ? 'Yes' : 'No'}
                         </StatusBadge>
                       </td>
-                      <td className="py-2 text-right font-medium">
+                      <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">
                         {dp > 0 ? formatCurrency(dp) : '$0'}
                       </td>
-                      <td className="py-2 pl-4 text-xs text-slate-500">
+                      <td className="py-2 pl-4 text-xs text-slate-500 dark:text-slate-400">
                         {zeroDown ? 'Within remaining entitlement' : `25% of amount above ${formatCurrency(va.zeroDownPower)}`}
                       </td>
                     </tr>
@@ -136,7 +136,7 @@ export default function VATracker() {
             </table>
           </div>
         ) : (
-          <p className="text-sm text-slate-500 text-center py-4">Enter loan data to see scenarios.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">Enter loan data to see scenarios.</p>
         )}
       </Card>
 
@@ -144,13 +144,13 @@ export default function VATracker() {
       <div className="grid lg:grid-cols-3 gap-4">
         <Card title="Sell + Restore Entitlement">
           <div className="space-y-2 text-sm">
-            <p className="text-slate-600">If you sell and pay off the loan:</p>
-            <ul className="space-y-1 text-slate-700">
+            <p className="text-slate-600 dark:text-slate-400">If you sell and pay off the loan:</p>
+            <ul className="space-y-1 text-slate-700 dark:text-slate-300">
               <li>• Full entitlement restored</li>
               <li>• Zero-down up to ~{formatCurrency(countyLimit)}</li>
               <li>• One-time restoration available</li>
             </ul>
-            <div className="mt-3 p-2 bg-green-50 rounded text-green-800 font-medium text-center">
+            <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/30 rounded text-green-800 dark:text-green-300 font-medium text-center">
               Full buying power: {formatCurrency(countyLimit)}
             </div>
           </div>
@@ -158,14 +158,14 @@ export default function VATracker() {
 
         <Card title="Refinance (IRRRL)">
           <div className="space-y-2 text-sm">
-            <p className="text-slate-600">VA IRRRL refinance:</p>
-            <ul className="space-y-1 text-slate-700">
+            <p className="text-slate-600 dark:text-slate-400">VA IRRRL refinance:</p>
+            <ul className="space-y-1 text-slate-700 dark:text-slate-300">
               <li>• No entitlement change</li>
               <li>• Remaining buying power unchanged</li>
               <li>• May lower monthly payment</li>
               <li>• Must show net tangible benefit</li>
             </ul>
-            <div className="mt-3 p-2 bg-yellow-50 rounded text-yellow-800 font-medium text-center">
+            <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/30 rounded text-yellow-800 dark:text-yellow-300 font-medium text-center">
               Entitlement: No change
             </div>
           </div>
@@ -173,14 +173,14 @@ export default function VATracker() {
 
         <Card title="Use Partial Entitlement">
           <div className="space-y-2 text-sm">
-            <p className="text-slate-600">Buy second home with remaining:</p>
-            <ul className="space-y-1 text-slate-700">
+            <p className="text-slate-600 dark:text-slate-400">Buy second home with remaining:</p>
+            <ul className="space-y-1 text-slate-700 dark:text-slate-300">
               <li>• Must occupy as primary residence</li>
               <li>• May need down payment</li>
               <li>• Must qualify for both payments (DTI)</li>
               <li>• Lender must approve</li>
             </ul>
-            <div className="mt-3 p-2 bg-blue-50 rounded text-blue-800 font-medium text-center">
+            <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/30 rounded text-blue-800 dark:text-blue-300 font-medium text-center">
               Zero-down up to: {va ? formatCurrency(va.zeroDownPower) : '—'}
             </div>
           </div>
@@ -199,10 +199,10 @@ export default function VATracker() {
             { action: 'Check if one-time restoration has been previously used', done: state.vaBenefit.previousRestoration === 'no', priority: 'yellow' },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-3 py-1.5">
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${item.done ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${item.done ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}>
                 {item.done ? '✓' : i + 1}
               </span>
-              <span className={`text-sm flex-1 ${item.done ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{item.action}</span>
+              <span className={`text-sm flex-1 ${item.done ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-700 dark:text-slate-300'}`}>{item.action}</span>
               {!item.done && <StatusBadge status={item.priority}>{item.priority === 'red' ? 'Urgent' : 'Soon'}</StatusBadge>}
             </div>
           ))}

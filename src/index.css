@@ -9,3 +9,7 @@
   --color-navy-dark: #0f2640;
   --color-slate-bg: #f1f5f9;
 }
+
+html {
+  color-scheme: light dark;
+}
