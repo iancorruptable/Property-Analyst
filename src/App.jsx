@@ -14,7 +14,7 @@ import Placeholder from './pages/Placeholder';
 export default function App() {
   return (
     <PropertyProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/Property-Analyst">
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Dashboard />} />
