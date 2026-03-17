@@ -4,12 +4,19 @@ import { formatCurrency, parseCurrency, calcCashFlow, calcBreakEvenRent } from '
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function CashFlow() {
-  const { state } = useProperty();
+  const { state, dispatch } = useProperty();
   const cf = calcCashFlow(state);
   const breakEven = calcBreakEvenRent(state);
   const rent = parseCurrency(state.rental?.targetRent);
 
   const hasData = rent > 0 && parseCurrency(state.mortgage?.monthlyPI) > 0;
+  const reserveCash = parseCurrency(state.rental?.reserveCash);
+  const monthlyReserveContrib = cf.maintenance + cf.capex;
+  const monthsOfCoverage = monthlyReserveContrib > 0 ? reserveCash / monthlyReserveContrib : 0;
+
+  const updateReserveCash = (value) => {
+    dispatch({ type: 'SET_FIELD', section: 'rental', field: 'reserveCash', value });
+  };
 
   // Vacancy stress test
   const stressTest = [1, 2, 3].map(months => {
@@ -81,6 +88,51 @@ export default function CashFlow() {
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500">after all costs + mortgage</p>
         </div>
+      </div>
+
+      {/* Cash Reserves */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-2 border-blue-200 dark:border-blue-700 p-5">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-sm font-semibold text-blue-800 dark:text-blue-300 uppercase tracking-wide">Cash Reserves on Hand</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Money set aside for maintenance, repairs, and capital expenditures
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-500 dark:text-slate-400">$</span>
+            <input
+              type="text"
+              value={state.rental?.reserveCash || ''}
+              onChange={e => updateReserveCash(e.target.value)}
+              placeholder="8,000"
+              className="w-32 px-3 py-2 text-right text-lg font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        {hasData && reserveCash > 0 && (
+          <div className="mt-4 grid sm:grid-cols-3 gap-3">
+            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 text-center">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Monthly Maint. Set-Aside</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(cf.maintenance)}</p>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 text-center">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Monthly CapEx Set-Aside</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(cf.capex)}</p>
+            </div>
+            <div className={`rounded-lg p-3 text-center ${monthsOfCoverage >= 12 ? 'bg-green-50 dark:bg-green-900/30' : monthsOfCoverage >= 6 ? 'bg-yellow-50 dark:bg-yellow-900/30' : 'bg-red-50 dark:bg-red-900/30'}`}>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Reserves Coverage</p>
+              <p className={`text-sm font-semibold ${monthsOfCoverage >= 12 ? 'text-green-700 dark:text-green-400' : monthsOfCoverage >= 6 ? 'text-yellow-700 dark:text-yellow-400' : 'text-red-700 dark:text-red-400'}`}>
+                {monthsOfCoverage.toFixed(1)} months
+              </p>
+            </div>
+          </div>
+        )}
+        {hasData && reserveCash > 0 && monthsOfCoverage < 6 && (
+          <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+            Tip: Most advisors recommend 6–12 months of reserve contributions on hand.
+          </p>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">

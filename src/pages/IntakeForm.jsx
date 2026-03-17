@@ -149,7 +149,12 @@ export default function IntakeForm() {
             <FormField label="Min Lease Term (months)" value={state.rental.minLeaseTerm} onChange={v => update('rental', 'minLeaseTerm', v)} />
             <FormField label="Furnished?" type="checkbox" value={state.rental.furnished} onChange={v => update('rental', 'furnished', v)} />
             <FormField label="Lawn/Pest Vendor" value={state.rental.lawnPestVendor} onChange={v => update('rental', 'lawnPestVendor', v)} />
-            <FormField label="Reserve Cash Set Aside" prefix="$" value={state.rental.reserveCash} onChange={v => update('rental', 'reserveCash', v)} placeholder="8,000" />
+          </div>
+          <div className="mt-4 pt-4 border-t-2 border-blue-200 dark:border-blue-700">
+            <p className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-3">Cash Reserves</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+            <FormField label="Reserve Cash on Hand" prefix="$" value={state.rental.reserveCash} onChange={v => update('rental', 'reserveCash', v)} placeholder="8,000" helpText="Actual cash set aside for this property" />
+            </div>
           </div>
         </Card>
       )}
