@@ -96,7 +96,9 @@ export function calcBreakEvenRent(state) {
   const maintRate = parseFloat(state.rental?.maintenanceReservePercent || 8) / 100;
   const capexRate = parseFloat(state.rental?.capexReservePercent || 5) / 100;
 
-  const divisor = 1 - vacancyRate - mgmtRate - maintRate - capexRate;
+  // Management fee is on effective gross (post-vacancy), so the correct
+  // algebraic break-even divisor is: (1-vacancy)*(1-mgmt) - maint - capex
+  const divisor = (1 - vacancyRate) * (1 - mgmtRate) - maintRate - capexRate;
   if (divisor <= 0) return fixedCosts * 3;
   return fixedCosts / divisor;
 }
