@@ -1,7 +1,8 @@
 import { useProperty } from '../store/PropertyContext';
 import Card from '../components/Card';
-import { CheckCircle2, Circle, FileText, Download, Upload } from 'lucide-react';
-import { useRef } from 'react';
+import { CheckCircle2, Circle, FileText, Download, Upload, Trash2, Eye, Paperclip, FolderPlus, File, Image, FileSpreadsheet, X } from 'lucide-react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { saveFile, getFile, deleteFile, getAllKeys, getStorageUsage, formatFileSize, readFileAsDataURL } from '../utils/fileStore';
 
 const documentCategories = [
   { category: 'Purchase & Closing', items: [
@@ -67,24 +68,148 @@ const documentCategories = [
   ]},
 ];
 
+const ACCEPTED_TYPES = '.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.rtf,.jpg,.jpeg,.png,.gif,.webp,.heic,.tiff,.bmp,.svg';
+
+function getFileIcon(mimeType) {
+  if (!mimeType) return File;
+  if (mimeType.startsWith('image/')) return Image;
+  if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || mimeType.includes('csv')) return FileSpreadsheet;
+  return FileText;
+}
+
 export default function DocumentsVault() {
   const { state, dispatch } = useProperty();
   const docs = state.documents?.vault || {};
+  const customDocs = state.documents?.customUploads || [];
   const fileInputRef = useRef(null);
+  const [uploadingKey, setUploadingKey] = useState(null);
+  const [fileKeys, setFileKeys] = useState([]);
+  const [storageUsed, setStorageUsed] = useState(0);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [customName, setCustomName] = useState('');
+  const [customCategory, setCustomCategory] = useState('');
+  const customFileRef = useRef(null);
+  const docUploadRef = useRef(null);
 
-  const toggleDoc = (key) => {
+  const refreshFileKeys = useCallback(async () => {
+    const keys = await getAllKeys();
+    setFileKeys(keys);
+    const usage = await getStorageUsage();
+    setStorageUsed(usage);
+  }, []);
+
+  useEffect(() => { refreshFileKeys(); }, [refreshFileKeys]);
+
+  const updateVault = (key, data) => {
     dispatch({
       type: 'SET_FIELD',
       section: 'documents',
       field: 'vault',
-      value: { ...docs, [key]: docs[key] ? null : { onFile: true, date: new Date().toISOString().split('T')[0] } },
+      value: { ...docs, [key]: data },
     });
   };
 
-  const totalDocs = documentCategories.reduce((sum, cat) => sum + cat.items.length, 0);
-  const completedDocs = Object.values(docs).filter(v => v?.onFile).length;
-  const percent = Math.round((completedDocs / totalDocs) * 100);
+  const handleFileUpload = async (key, file) => {
+    if (!file) return;
+    const dataURL = await readFileAsDataURL(file);
+    await saveFile(key, { data: dataURL, name: file.name, type: file.type, size: file.size });
+    updateVault(key, { onFile: true, date: new Date().toISOString().split('T')[0], fileName: file.name, fileType: file.type, fileSize: file.size });
+    await refreshFileKeys();
+    setUploadingKey(null);
+  };
 
+  const handleRemoveFile = async (key) => {
+    await deleteFile(key);
+    updateVault(key, null);
+    await refreshFileKeys();
+  };
+
+  const handleViewFile = async (key, fileName) => {
+    const fileData = await getFile(key);
+    if (fileData?.data) {
+      setPreviewFile({ data: fileData.data, name: fileName || fileData.name, type: fileData.type });
+    }
+  };
+
+  const handleDownloadFile = async (key, fileName) => {
+    const fileData = await getFile(key);
+    if (fileData?.data) {
+      const a = document.createElement('a');
+      a.href = fileData.data;
+      a.download = fileName || fileData.name || 'document';
+      a.click();
+    }
+  };
+
+  // Custom uploads
+  const handleCustomUpload = async (file) => {
+    if (!file) return;
+    const id = `custom_${Date.now()}`;
+    const dataURL = await readFileAsDataURL(file);
+    await saveFile(id, { data: dataURL, name: file.name, type: file.type, size: file.size });
+    const newUpload = {
+      id,
+      name: customName || file.name,
+      category: customCategory || 'general',
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      date: new Date().toISOString().split('T')[0],
+    };
+    dispatch({ type: 'ADD_TO_ARRAY', section: 'documents', field: 'customUploads', item: newUpload });
+    // Since ADD_TO_ARRAY uses section as the array key, handle custom uploads in documents object
+    dispatch({
+      type: 'SET_FIELD',
+      section: 'documents',
+      field: 'customUploads',
+      value: [...customDocs, newUpload],
+    });
+    setCustomName('');
+    setCustomCategory('');
+    await refreshFileKeys();
+  };
+
+  const handleRemoveCustom = async (index, id) => {
+    await deleteFile(id);
+    dispatch({
+      type: 'SET_FIELD',
+      section: 'documents',
+      field: 'customUploads',
+      value: customDocs.filter((_, i) => i !== index),
+    });
+    await refreshFileKeys();
+  };
+
+  // Drag and drop for custom area
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    for (const file of files) {
+      const id = `custom_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      const dataURL = await readFileAsDataURL(file);
+      await saveFile(id, { data: dataURL, name: file.name, type: file.type, size: file.size });
+      const newUpload = {
+        id,
+        name: file.name,
+        category: customCategory || 'general',
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        date: new Date().toISOString().split('T')[0],
+      };
+      dispatch({
+        type: 'SET_FIELD',
+        section: 'documents',
+        field: 'customUploads',
+        value: [...(state.documents?.customUploads || []), newUpload],
+      });
+    }
+    await refreshFileKeys();
+  };
+
+  // Data export/import
   const handleExport = () => {
     const data = JSON.stringify(state, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
@@ -111,14 +236,20 @@ export default function DocumentsVault() {
       }
     };
     reader.readAsText(file);
+    e.target.value = '';
   };
+
+  const totalDocs = documentCategories.reduce((sum, cat) => sum + cat.items.length, 0);
+  const completedDocs = Object.values(docs).filter(v => v?.onFile).length;
+  const percent = Math.round((completedDocs / totalDocs) * 100);
+  const customCategories = ['general', 'photos', 'receipts', 'correspondence', 'legal', 'financial', 'inspection', 'other'];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Documents Vault</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 16 — Document index, checklist, and data backup</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 16 — Upload, organize, and track every property document</p>
         </div>
         <div className="flex gap-2">
           <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
@@ -131,23 +262,32 @@ export default function DocumentsVault() {
         </div>
       </div>
 
-      {/* Progress */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Documents on File</span>
-          <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{completedDocs}/{totalDocs} ({percent}%)</span>
+      {/* Progress + Storage */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Documents on File</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{completedDocs}/{totalDocs} ({percent}%)</span>
+          </div>
+          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+            <div className={`h-2 rounded-full transition-all duration-500 ${percent === 100 ? 'bg-green-500' : percent > 50 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{ width: `${percent}%` }} />
+          </div>
         </div>
-        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-          <div className={`h-2 rounded-full transition-all duration-500 ${percent === 100 ? 'bg-green-500' : percent > 50 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{ width: `${percent}%` }} />
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Files Stored</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{fileKeys.length} files &middot; {formatFileSize(storageUsed)}</span>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500">Stored locally in your browser (IndexedDB). Files stay on your device.</p>
         </div>
       </div>
 
-      {/* Data Backup Info */}
+      {/* Supported formats info */}
       <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-4 text-sm text-blue-800 dark:text-blue-300">
-        <strong>Data Backup:</strong> Your data is stored in browser localStorage. Use the Export button above to download a JSON backup. You can restore it anytime with Import — even on a different device or browser.
+        <strong>Supported uploads:</strong> PDF, Word (.doc/.docx), Excel (.xls/.xlsx), CSV, images (JPG, PNG, GIF, WebP, HEIC, TIFF), text files, and more. Click any document row to upload a file, or use the drag-and-drop area below for bulk uploads.
       </div>
 
-      {/* Document Checklists */}
+      {/* Document Checklists with Upload */}
       {documentCategories.map(category => {
         const catComplete = category.items.filter(item => docs[item.key]?.onFile).length;
         return (
@@ -155,21 +295,249 @@ export default function DocumentsVault() {
             status={catComplete === category.items.length ? 'green' : catComplete > 0 ? 'yellow' : 'red'}>
             <div className="space-y-1">
               {category.items.map(item => {
-                const isDone = docs[item.key]?.onFile;
+                const doc = docs[item.key];
+                const hasFile = doc?.onFile;
+                const hasUploadedFile = hasFile && doc?.fileName;
+                const Icon = hasUploadedFile ? getFileIcon(doc.fileType) : FileText;
+
                 return (
-                  <button key={item.key} onClick={() => toggleDoc(item.key)}
-                    className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
-                    {isDone ? <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />}
-                    <FileText size={16} className="text-slate-400 dark:text-slate-500 flex-shrink-0" />
-                    <span className={`text-sm flex-1 ${isDone ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-700 dark:text-slate-300'}`}>{item.label}</span>
-                    {isDone && docs[item.key]?.date && <span className="text-xs text-slate-400 dark:text-slate-500">{docs[item.key].date}</span>}
-                  </button>
+                  <div key={item.key} className="group flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    {/* Status icon - toggle on file */}
+                    <button onClick={() => {
+                      if (hasFile) {
+                        handleRemoveFile(item.key);
+                      } else {
+                        updateVault(item.key, { onFile: true, date: new Date().toISOString().split('T')[0] });
+                      }
+                    }} className="flex-shrink-0">
+                      {hasFile ? <CheckCircle2 size={20} className="text-green-500" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600" />}
+                    </button>
+
+                    {/* File icon */}
+                    <Icon size={16} className={`flex-shrink-0 ${hasUploadedFile ? 'text-blue-500' : 'text-slate-400 dark:text-slate-500'}`} />
+
+                    {/* Label and file info */}
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-sm block ${hasFile ? 'text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {item.label}
+                      </span>
+                      {hasUploadedFile && (
+                        <span className="text-xs text-slate-400 dark:text-slate-500 block truncate">
+                          {doc.fileName} &middot; {formatFileSize(doc.fileSize)} &middot; {doc.date}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {hasUploadedFile && (
+                        <>
+                          <button onClick={() => handleViewFile(item.key, doc.fileName)} className="p-1 text-slate-400 hover:text-blue-500" title="Preview">
+                            <Eye size={14} />
+                          </button>
+                          <button onClick={() => handleDownloadFile(item.key, doc.fileName)} className="p-1 text-slate-400 hover:text-green-500" title="Download">
+                            <Download size={14} />
+                          </button>
+                        </>
+                      )}
+                      <button onClick={() => {
+                        setUploadingKey(item.key);
+                        docUploadRef.current?.click();
+                      }} className="p-1 text-slate-400 hover:text-blue-500" title={hasUploadedFile ? 'Replace file' : 'Upload file'}>
+                        <Paperclip size={14} />
+                      </button>
+                      {hasFile && (
+                        <button onClick={() => handleRemoveFile(item.key)} className="p-1 text-slate-400 hover:text-red-500" title="Remove">
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 );
               })}
             </div>
           </Card>
         );
       })}
+
+      {/* Hidden file input for document uploads */}
+      <input
+        ref={docUploadRef}
+        type="file"
+        accept={ACCEPTED_TYPES}
+        onChange={(e) => {
+          if (uploadingKey && e.target.files[0]) {
+            handleFileUpload(uploadingKey, e.target.files[0]);
+          }
+          e.target.value = '';
+        }}
+        className="hidden"
+      />
+
+      {/* Custom / General Document Upload */}
+      <Card title={`Other Documents (${customDocs.length})`}>
+        <div className="space-y-4">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Upload any documents not covered above — photos, correspondence, receipts, notes, etc.
+          </p>
+
+          {/* Drag and drop zone */}
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
+              dragOver
+                ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
+                : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
+            }`}
+          >
+            <Upload size={32} className="mx-auto text-slate-400 dark:text-slate-500 mb-3" />
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Drag and drop files here</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">or</p>
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
+              <input
+                type="text"
+                value={customName}
+                onChange={e => setCustomName(e.target.value)}
+                placeholder="Document name (optional)"
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+              />
+              <select
+                value={customCategory}
+                onChange={e => setCustomCategory(e.target.value)}
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+              >
+                <option value="">Category...</option>
+                {customCategories.map(c => (
+                  <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                ))}
+              </select>
+              <button
+                onClick={() => customFileRef.current?.click()}
+                className="flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                <FolderPlus size={16} /> Choose Files
+              </button>
+            </div>
+            <input
+              ref={customFileRef}
+              type="file"
+              accept={ACCEPTED_TYPES}
+              multiple
+              onChange={async (e) => {
+                for (const file of Array.from(e.target.files)) {
+                  await handleCustomUpload(file);
+                }
+                e.target.value = '';
+              }}
+              className="hidden"
+            />
+          </div>
+
+          {/* Custom uploads list */}
+          {customDocs.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Document</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Category</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">File</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Size</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Date</th>
+                    <th className="py-2"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customDocs.map((doc, i) => {
+                    const Icon = getFileIcon(doc.fileType);
+                    return (
+                      <tr key={doc.id} className="border-b border-slate-50 dark:border-slate-700/50 group">
+                        <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{doc.name}</td>
+                        <td className="py-2">
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 capitalize">
+                            {doc.category}
+                          </span>
+                        </td>
+                        <td className="py-2">
+                          <span className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                            <Icon size={12} />
+                            <span className="truncate max-w-[150px]">{doc.fileName}</span>
+                          </span>
+                        </td>
+                        <td className="py-2 text-right text-xs text-slate-500 dark:text-slate-400">{formatFileSize(doc.fileSize)}</td>
+                        <td className="py-2 text-xs text-slate-500 dark:text-slate-400">{doc.date}</td>
+                        <td className="py-2 text-right">
+                          <div className="flex items-center gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => handleViewFile(doc.id, doc.fileName)} className="p-1 text-slate-400 hover:text-blue-500" title="Preview">
+                              <Eye size={14} />
+                            </button>
+                            <button onClick={() => handleDownloadFile(doc.id, doc.fileName)} className="p-1 text-slate-400 hover:text-green-500" title="Download">
+                              <Download size={14} />
+                            </button>
+                            <button onClick={() => handleRemoveCustom(i, doc.id)} className="p-1 text-slate-400 hover:text-red-500" title="Delete">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* File Preview Modal */}
+      {previewFile && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setPreviewFile(null)}>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText size={16} className="text-slate-400 flex-shrink-0" />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{previewFile.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => {
+                  const a = document.createElement('a');
+                  a.href = previewFile.data;
+                  a.download = previewFile.name;
+                  a.click();
+                }} className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-1">
+                  <Download size={12} /> Download
+                </button>
+                <button onClick={() => setPreviewFile(null)} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+              {previewFile.type?.startsWith('image/') ? (
+                <img src={previewFile.data} alt={previewFile.name} className="max-w-full max-h-[70vh] object-contain rounded-lg" />
+              ) : previewFile.type === 'application/pdf' ? (
+                <iframe src={previewFile.data} className="w-full h-[70vh] rounded-lg" title={previewFile.name} />
+              ) : (
+                <div className="text-center py-12">
+                  <FileText size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">Preview not available for this file type</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">{previewFile.type || 'Unknown type'}</p>
+                  <button onClick={() => {
+                    const a = document.createElement('a');
+                    a.href = previewFile.data;
+                    a.download = previewFile.name;
+                    a.click();
+                  }} className="mt-4 text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 mx-auto">
+                    <Download size={14} /> Download to View
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
