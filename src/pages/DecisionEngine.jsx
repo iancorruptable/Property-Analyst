@@ -97,7 +97,7 @@ export default function DecisionEngine() {
             { label: 'Break-Even Margin', score: scores.breakEvenMargin, value: hasData ? formatCurrency(targetRent - breakEven) : '—', detail: targetRent >= breakEven ? 'Above break-even' : 'Below break-even' },
             { label: 'VA Buying Power', score: scores.vaEntitlement, value: va ? formatCurrency(va.zeroDownPower) : '—', detail: va ? `${formatCurrency(va.zeroDownPower)} zero-down` : 'Unknown' },
           ].map(item => (
-            <div key={item.label} className="flex items-center gap-4 py-2 border-b border-slate-50 dark:border-slate-700/50">
+            <div key={item.label} className="flex items-center gap-4 py-2 border-b border-slate-50 dark:border-slate-700/50 min-h-[44px]">
               <div className="flex-1">
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{item.label}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">{item.detail}</p>
@@ -105,7 +105,7 @@ export default function DecisionEngine() {
               <span className="text-sm font-medium text-slate-900 dark:text-slate-100 w-24 text-right">{item.value}</span>
               <div className="flex gap-1">
                 {[0, 1, 2, 3].map(s => (
-                  <span key={s} className={`w-3 h-3 rounded-full ${s <= item.score ? (item.score >= 2 ? 'bg-green-500' : item.score >= 1 ? 'bg-yellow-500' : 'bg-red-500') : 'bg-slate-200 dark:bg-slate-700'}`} />
+                  <span key={s} className={`w-4 h-4 sm:w-3 sm:h-3 rounded-full ${s <= item.score ? (item.score >= 2 ? 'bg-green-500' : item.score >= 1 ? 'bg-yellow-500' : 'bg-red-500') : 'bg-slate-200 dark:bg-slate-700'}`} />
                 ))}
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function DecisionEngine() {
         </div>
       </Card>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Keep & Rent */}
         <Card title="Scenario: Keep & Rent" status={cf.cashFlow >= 0 ? 'green' : 'yellow'}>
           <div className="space-y-2 text-sm">
@@ -174,7 +174,24 @@ export default function DecisionEngine() {
 
       {/* Reserve Sizing */}
       <Card title="Reserve Fund Sizing Guide">
-        <div className="overflow-x-auto">
+        {/* Mobile card view */}
+        <div className="block sm:hidden space-y-3">
+          {[
+            ['Conservative', '$10,000–$15,000', '6 months expenses + 1 major repair', 'green'],
+            ['Moderate', '$5,000–$10,000', '3 months expenses + emergency fund', 'yellow'],
+            ['Aggressive', '$3,000–$5,000', 'Minimum — 2 months expenses only', 'red'],
+          ].map(([level, amount, covers, status], i) => (
+            <div key={i} className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <StatusBadge status={status}>{level}</StatusBadge>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{amount}</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{covers}</p>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table view */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">

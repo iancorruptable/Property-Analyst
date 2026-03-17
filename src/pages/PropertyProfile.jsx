@@ -28,7 +28,7 @@ export default function PropertyProfile() {
       </Card>
 
       <Card title="Property Details">
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <FormField label="Type" type="select" value={p.propertyType} onChange={v => update('property', 'propertyType', v)} options={['single-family', 'townhome', 'condo', 'duplex']} />
           <FormField label="Year Built" value={p.yearBuilt} onChange={v => update('property', 'yearBuilt', v)} />
           <FormField label="Sq Ft" value={p.sqft} onChange={v => update('property', 'sqft', v)} />

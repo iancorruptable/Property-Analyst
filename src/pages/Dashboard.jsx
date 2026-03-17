@@ -118,7 +118,7 @@ export default function Dashboard() {
       )}
 
       {/* Property Status */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         <MetricCard
           label="Property Status"
           value={statusLabels[state.property?.status] || 'Not Set'}
@@ -145,7 +145,7 @@ export default function Dashboard() {
       </div>
 
       {/* Financial Snapshot */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         <MetricCard
           label="Monthly Payment"
           value={state.mortgage?.totalMonthlyPayment ? formatCurrency(state.mortgage.totalMonthlyPayment) : '—'}
@@ -180,7 +180,7 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-2">
             {alerts.map((alert, i) => (
-              <Link key={i} to={alert.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+              <Link key={i} to={alert.link} className="flex items-center gap-3 p-2 min-h-[44px] rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                 <StatusDot status={alert.severity} />
                 <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{alert.text}</span>
                 <ArrowRight size={16} className="text-slate-400 dark:text-slate-500" />
@@ -265,7 +265,7 @@ function Row({ label, value, sub, bold, color }) {
 
 function ActionItem({ num, text, link, severity }) {
   return (
-    <Link to={link} className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+    <Link to={link} className="flex items-center gap-3 p-3 min-h-[44px] rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
       <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${severity === 'red' ? 'bg-red-500' : 'bg-yellow-500'}`}>
         {num}
       </div>

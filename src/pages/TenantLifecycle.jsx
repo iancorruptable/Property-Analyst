@@ -71,7 +71,7 @@ export default function TenantLifecycle() {
       </div>
 
       {/* Tenant Status */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Status</p>
           <p className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1 capitalize">{tenant.status || 'No Tenant'}</p>
@@ -116,7 +116,7 @@ export default function TenantLifecycle() {
         <div className="space-y-1">
           {screeningChecklist.map((item, i) => (
             <button key={i} onClick={() => toggleChecklist('screeningChecklist', i)}
-              className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+              className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]">
               <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs ${(tenant.screeningChecklist || [])[i] ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
                 {(tenant.screeningChecklist || [])[i] ? '✓' : ''}
               </span>
@@ -132,7 +132,7 @@ export default function TenantLifecycle() {
         <div className="space-y-1">
           {moveInChecklist.map((item, i) => (
             <button key={i} onClick={() => toggleChecklist('moveInChecklist', i)}
-              className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+              className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]">
               <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs ${(tenant.moveInChecklist || [])[i] ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
                 {(tenant.moveInChecklist || [])[i] ? '✓' : ''}
               </span>
@@ -148,7 +148,7 @@ export default function TenantLifecycle() {
         <div className="space-y-1">
           {moveOutChecklist.map((item, i) => (
             <button key={i} onClick={() => toggleChecklist('moveOutChecklist', i)}
-              className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+              className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]">
               <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs ${(tenant.moveOutChecklist || [])[i] ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
                 {(tenant.moveOutChecklist || [])[i] ? '✓' : ''}
               </span>

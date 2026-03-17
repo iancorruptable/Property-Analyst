@@ -86,7 +86,7 @@ export default function CashFlow() {
       )}
 
       {/* Monthly Summary */}
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5 text-center">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Gross Rent</p>
           <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">{hasData ? formatCurrency(cf.grossRent) : '—'}</p>
@@ -115,7 +115,7 @@ export default function CashFlow() {
               Money set aside for maintenance, repairs, and capital expenditures
             </p>
           </div>
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-500 dark:text-slate-400">$</span>
               <input
@@ -123,7 +123,7 @@ export default function CashFlow() {
                 value={state.rental?.reserveCash || ''}
                 onChange={e => updateReserveCash(e.target.value)}
                 placeholder="8,000"
-                className="w-32 px-3 py-2 text-right text-lg font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full sm:w-32 px-3 py-2 text-right text-lg font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div className="flex items-center gap-1">
@@ -133,7 +133,7 @@ export default function CashFlow() {
                 value={state.rental?.marginalTaxRate || ''}
                 onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'marginalTaxRate', value: e.target.value })}
                 placeholder="22"
-                className="w-16 px-2 py-2 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full sm:w-16 px-2 py-2 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <span className="text-sm text-slate-500 dark:text-slate-400">%</span>
             </div>
@@ -252,7 +252,7 @@ export default function CashFlow() {
         {/* Expense Chart */}
         <Card title="Monthly Expense Distribution">
           {hasData && expenseChart.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={expenseChart} layout="vertical" margin={{ left: 60 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-slate-200, #e2e8f0)" />
                 <XAxis type="number" tickFormatter={v => `$${v.toLocaleString()}`} tick={{ fill: 'currentColor' }} />
@@ -297,7 +297,28 @@ export default function CashFlow() {
 
         {/* Vacancy Stress Test */}
         <Card title="Vacancy Stress Test">
-          <div className="overflow-x-auto">
+          {/* Mobile cards */}
+          <div className="block sm:hidden space-y-3">
+            {stressTest.map(row => (
+              <div key={row.months} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-1">
+                <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{row.months} month{row.months > 1 ? 's' : ''} vacant</p>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500 dark:text-slate-400">Lost Rent</span>
+                  <span className="text-red-600 dark:text-red-400">{hasData ? formatCurrency(row.lostRent) : '—'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-500 dark:text-slate-400">Turnover</span>
+                  <span className="text-slate-600 dark:text-slate-400">{formatCurrency(row.turnoverCost)}</span>
+                </div>
+                <div className="flex justify-between text-sm font-semibold">
+                  <span className="text-slate-500 dark:text-slate-400">Total Impact</span>
+                  <span className="text-red-700 dark:text-red-400">{hasData ? formatCurrency(row.totalImpact) : '—'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -324,7 +345,24 @@ export default function CashFlow() {
 
       {/* Rent Sensitivity */}
       <Card title="Rent Sensitivity Analysis">
-        <div className="overflow-x-auto">
+        {/* Mobile cards */}
+        <div className="block sm:hidden space-y-3">
+          {sensitivities.map(row => (
+            <div key={row.delta} className={`rounded-lg p-3 space-y-1 ${row.delta === 0 ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-blue-200 dark:ring-blue-700' : 'bg-slate-50 dark:bg-slate-700/50'}`}>
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{hasData ? formatCurrency(row.rent) : '—'} <span className="text-xs font-normal text-slate-500 dark:text-slate-400">{row.delta === 0 ? 'Your target' : row.delta > 0 ? 'Above target' : 'Below target'}</span></p>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">Monthly CF</span>
+                <span className={row.cashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}>{hasData ? formatCurrency(row.cashFlow) : '—'}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500 dark:text-slate-400">Annual CF</span>
+                <span className={row.annualCashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}>{hasData ? formatCurrency(row.annualCashFlow) : '—'}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -357,7 +395,7 @@ export default function CashFlow() {
       {/* Multi-Year Projection */}
       <Card title="10-Year Cash Flow Projection">
         <div className="space-y-4">
-          <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
             <div className="flex items-center gap-2">
               <label className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Annual rent increase</label>
               <input
@@ -384,7 +422,7 @@ export default function CashFlow() {
 
           {hasData && multiYear.length > 0 && (
             <>
-              <ResponsiveContainer width="100%" height={280}>
+              <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={multiYear} margin={{ left: 10, right: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-slate-200, #e2e8f0)" />
                   <XAxis dataKey="year" tick={{ fill: 'currentColor', fontSize: 12 }} label={{ value: 'Year', position: 'insideBottom', offset: -5, fill: 'currentColor', fontSize: 12 }} />
@@ -396,7 +434,40 @@ export default function CashFlow() {
                 </LineChart>
               </ResponsiveContainer>
 
-              <div className="overflow-x-auto">
+              {/* Mobile cards */}
+              <div className="block sm:hidden space-y-3">
+                {multiYear.map(row => (
+                  <div key={row.year} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-1">
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">Year {row.year}</p>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">Mo. Rent</span>
+                      <span className="text-slate-700 dark:text-slate-300">{formatCurrency(row.monthlyRent)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">NOI</span>
+                      <span className="text-slate-700 dark:text-slate-300">{formatCurrency(row.noi)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">Pre-Tax CF</span>
+                      <span className={`font-medium ${row.preTaxCashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>{formatCurrency(row.preTaxCashFlow)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">Tax Impact</span>
+                      <span className={row.taxImpact < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>{row.taxImpact < 0 ? '+' : ''}{formatCurrency(Math.abs(row.taxImpact))}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">After-Tax CF</span>
+                      <span className={`font-medium ${row.afterTaxCashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>{formatCurrency(row.afterTaxCashFlow)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">Cumulative</span>
+                      <span className={`font-medium ${row.cumulativeAfterTax >= 0 ? 'text-blue-700 dark:text-blue-400' : 'text-red-700 dark:text-red-400'}`}>{formatCurrency(row.cumulativeAfterTax)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-700">

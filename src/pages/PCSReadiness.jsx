@@ -88,7 +88,7 @@ export default function PCSReadiness() {
       </div>
 
       {/* PCS Info */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Current Station</p>
           <p className="text-sm font-bold text-slate-900 dark:text-slate-100 mt-1">{state.operations?.currentDutyStation || '—'}</p>
@@ -115,7 +115,7 @@ export default function PCSReadiness() {
             const isDone = pcsData[item.key]?.done;
             return (
               <button key={item.key} onClick={() => toggle(item.key)}
-                className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+                className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]">
                 {isDone ? <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />}
                 <span className={`text-sm flex-1 ${isDone ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-700 dark:text-slate-300'}`}>{item.label}</span>
                 {isDone && pcsData[item.key]?.date && <span className="text-xs text-slate-400 dark:text-slate-500">{pcsData[item.key].date}</span>}
@@ -133,7 +133,7 @@ export default function PCSReadiness() {
             const isDone = pcsData[item.key]?.done;
             return (
               <button key={item.key} onClick={() => toggle(item.key)}
-                className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+                className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]">
                 {isDone ? <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />}
                 <span className={`text-sm flex-1 ${isDone ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-700 dark:text-slate-300'}`}>{item.label}</span>
                 {isDone && pcsData[item.key]?.date && <span className="text-xs text-slate-400 dark:text-slate-500">{pcsData[item.key].date}</span>}

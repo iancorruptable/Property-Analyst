@@ -78,7 +78,7 @@ export default function Maintenance() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Entries ({analysisYear})</p>
           <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">{yearLog.length}</p>
@@ -100,7 +100,7 @@ export default function Maintenance() {
       {/* Add Maintenance Entry */}
       <Card title="Log Maintenance Item">
         <div className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <FormField label="Date" type="date" value={newEntry.date} onChange={v => setNewEntry(p => ({ ...p, date: v }))} />
             <FormField label="Description" value={newEntry.description} onChange={v => setNewEntry(p => ({ ...p, description: v }))} placeholder="What was done" />
             <FormField label="Cost" prefix="$" value={newEntry.cost} onChange={v => setNewEntry(p => ({ ...p, cost: v }))} />
@@ -117,7 +117,34 @@ export default function Maintenance() {
       {/* Maintenance Log */}
       {yearLog.length > 0 && (
         <Card title={`Maintenance Log — ${analysisYear}`}>
-          <div className="overflow-x-auto">
+          {/* Mobile cards */}
+          <div className="block sm:hidden space-y-3">
+            {[...yearLog].reverse().map((entry, i) => {
+              const realIndex = log.indexOf(yearLog[yearLog.length - 1 - i]);
+              return (
+                <div key={entry.id || i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{entry.description}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{entry.date}{entry.vendor ? ` · ${entry.vendor}` : ''}</p>
+                    </div>
+                    <button onClick={() => removeEntry(realIndex)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status="blue">{entry.category}</StatusBadge>
+                      <StatusBadge status={entry.status === 'completed' ? 'green' : entry.status === 'in-progress' ? 'yellow' : 'red'}>
+                        {entry.status}
+                      </StatusBadge>
+                    </div>
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{entry.cost ? formatCurrency(entry.cost) : '—'}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -146,7 +173,7 @@ export default function Maintenance() {
                         </StatusBadge>
                       </td>
                       <td className="py-2 text-right">
-                        <button onClick={() => removeEntry(realIndex)} className="text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
+                        <button onClick={() => removeEntry(realIndex)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
                       </td>
                     </tr>
                   );
@@ -177,7 +204,20 @@ export default function Maintenance() {
 
       {/* System Lifespans */}
       <Card title="System Replacement Planning">
-        <div className="overflow-x-auto">
+        {/* Mobile cards */}
+        <div className="block sm:hidden space-y-3">
+          {systemLifespans.map((sys, i) => (
+            <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{sys.system}</p>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-xs text-slate-500 dark:text-slate-400">{sys.lifespan}</span>
+                <span className="text-xs font-medium text-slate-900 dark:text-slate-100">{sys.replacement}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -207,7 +247,7 @@ export default function Maintenance() {
             const done = (state.documents?.hurricanePrep || [])[i];
             return (
               <button key={i} onClick={() => toggleHurricane(i)}
-                className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+                className="w-full flex items-center gap-3 py-2 px-2 min-h-[44px] rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
                 <span className={`w-5 h-5 rounded border flex items-center justify-center text-xs ${done ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
                   {done ? '✓' : ''}
                 </span>

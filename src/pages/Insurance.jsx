@@ -77,7 +77,7 @@ export default function Insurance() {
       )}
 
       {/* Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Policies on File</p>
           <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">{policies.length || (t.insuranceCarrier ? 1 : 0)}</p>
@@ -121,7 +121,7 @@ export default function Insurance() {
       {/* Add Policy */}
       <Card title="Additional Policies">
         <div className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             <FormField label="Type" type="select" value={newPolicy.type} onChange={v => setNewPolicy(p => ({ ...p, type: v }))} options={['landlord', 'flood', 'umbrella', 'windstorm', 'earthquake', 'renters-required', 'other']} />
             <FormField label="Carrier" value={newPolicy.carrier} onChange={v => setNewPolicy(p => ({ ...p, carrier: v }))} />
             <FormField label="Annual Premium" prefix="$" value={newPolicy.premium} onChange={v => setNewPolicy(p => ({ ...p, premium: v }))} />
@@ -135,40 +135,84 @@ export default function Insurance() {
           </button>
         </div>
         {policies.length > 0 && (
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Type</th>
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Carrier</th>
-                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Premium</th>
-                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Deductible</th>
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Renewal</th>
-                  <th className="py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {policies.map((pol, i) => (
-                  <tr key={pol.id || i} className="border-b border-slate-50 dark:border-slate-700/50">
-                    <td className="py-2"><StatusBadge status="blue">{pol.type}</StatusBadge></td>
-                    <td className="py-2 text-slate-700 dark:text-slate-300">{pol.carrier}</td>
-                    <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{pol.premium ? formatCurrency(pol.premium) : '—'}</td>
-                    <td className="py-2 text-right text-slate-600 dark:text-slate-400">{pol.deductible ? formatCurrency(pol.deductible) : '—'}</td>
-                    <td className="py-2 text-slate-500 dark:text-slate-400">{pol.renewalDate || '—'}</td>
-                    <td className="py-2 text-right">
-                      <button onClick={() => removePolicy(i)} className="text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
-                    </td>
+          <>
+            {/* Mobile cards */}
+            <div className="mt-4 block sm:hidden space-y-3">
+              {policies.map((pol, i) => (
+                <div key={pol.id || i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <StatusBadge status="blue">{pol.type}</StatusBadge>
+                    <button onClick={() => removePolicy(i)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{pol.carrier}</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Premium</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100">{pol.premium ? formatCurrency(pol.premium) : '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Deductible</p>
+                      <p className="text-slate-600 dark:text-slate-400">{pol.deductible ? formatCurrency(pol.deductible) : '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Renewal</p>
+                      <p className="text-slate-500 dark:text-slate-400">{pol.renewalDate || '—'}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="mt-4 hidden sm:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Type</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Carrier</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Premium</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Deductible</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Renewal</th>
+                    <th className="py-2"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {policies.map((pol, i) => (
+                    <tr key={pol.id || i} className="border-b border-slate-50 dark:border-slate-700/50">
+                      <td className="py-2"><StatusBadge status="blue">{pol.type}</StatusBadge></td>
+                      <td className="py-2 text-slate-700 dark:text-slate-300">{pol.carrier}</td>
+                      <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{pol.premium ? formatCurrency(pol.premium) : '—'}</td>
+                      <td className="py-2 text-right text-slate-600 dark:text-slate-400">{pol.deductible ? formatCurrency(pol.deductible) : '—'}</td>
+                      <td className="py-2 text-slate-500 dark:text-slate-400">{pol.renewalDate || '—'}</td>
+                      <td className="py-2 text-right">
+                        <button onClick={() => removePolicy(i)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </Card>
 
       {/* Risk Register */}
       <Card title="Risk Register">
-        <div className="overflow-x-auto">
+        {/* Mobile cards */}
+        <div className="block sm:hidden space-y-3">
+          {riskCategories.map((r, i) => (
+            <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{r.risk}</span>
+                <StatusBadge status={r.severity}>{r.severity === 'red' ? 'High' : 'Medium'}</StatusBadge>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400">{r.mitigation}</p>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">

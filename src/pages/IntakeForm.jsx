@@ -47,12 +47,12 @@ export default function IntakeForm() {
       </div>
 
       {/* Section Tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex sm:flex-wrap gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible">
         {sections.map(s => (
           <button
             key={s.id}
             onClick={() => setActiveSection(s.id)}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap min-h-[44px] flex-shrink-0 ${
               activeSection === s.id
                 ? 'bg-blue-600 text-white'
                 : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'

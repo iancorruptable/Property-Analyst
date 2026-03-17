@@ -99,7 +99,7 @@ export default function PMOversight() {
                   <button
                     key={score}
                     onClick={() => update(m.key, score)}
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                    className={`w-10 h-10 sm:w-8 sm:h-8 rounded-lg text-sm font-medium transition-colors ${
                       parseInt(pm[m.key]) === score
                         ? score >= 4 ? 'bg-green-500 text-white' : score >= 3 ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
                         : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
@@ -114,7 +114,7 @@ export default function PMOversight() {
         </div>
       </Card>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 gap-6">
         {/* Interview Questions */}
         <Card title="PM Interview Questions">
           <ol className="space-y-2">
@@ -157,7 +157,27 @@ export default function PMOversight() {
 
       {/* Fee Comparison */}
       <Card title="Typical PM Fee Structure (NW Florida)">
-        <div className="overflow-x-auto">
+        {/* Mobile card view */}
+        <div className="block sm:hidden space-y-3">
+          {[
+            ['Monthly Management', '8\u201310%', 'Of collected rent'],
+            ['Leasing / Placement', '50\u2013100%', 'Of first month rent'],
+            ['Lease Renewal', '$0\u2013$300', 'Some charge, some don\'t'],
+            ['Maintenance Markup', '0\u201315%', 'On vendor invoices'],
+            ['Eviction Coordination', '$200\u2013$500', 'Plus legal costs'],
+            ['Early Termination', '1\u20133 months', 'Management fee penalty'],
+          ].map(([type, range, notes], i) => (
+            <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{type}</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{range}</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{notes}</p>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table view */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -168,12 +188,12 @@ export default function PMOversight() {
             </thead>
             <tbody>
               {[
-                ['Monthly Management', '8–10%', 'Of collected rent'],
-                ['Leasing / Placement', '50–100%', 'Of first month rent'],
-                ['Lease Renewal', '$0–$300', 'Some charge, some don\'t'],
-                ['Maintenance Markup', '0–15%', 'On vendor invoices'],
-                ['Eviction Coordination', '$200–$500', 'Plus legal costs'],
-                ['Early Termination', '1–3 months', 'Management fee penalty'],
+                ['Monthly Management', '8\u201310%', 'Of collected rent'],
+                ['Leasing / Placement', '50\u2013100%', 'Of first month rent'],
+                ['Lease Renewal', '$0\u2013$300', 'Some charge, some don\'t'],
+                ['Maintenance Markup', '0\u201315%', 'On vendor invoices'],
+                ['Eviction Coordination', '$200\u2013$500', 'Plus legal costs'],
+                ['Early Termination', '1\u20133 months', 'Management fee penalty'],
               ].map(([type, range, notes], i) => (
                 <tr key={i} className="border-b border-slate-50 dark:border-slate-700/50">
                   <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{type}</td>

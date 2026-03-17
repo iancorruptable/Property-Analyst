@@ -153,7 +153,7 @@ export default function TaxTracker() {
           {/* Single entry mode */}
           {!batchMode && !recurringMode && (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 <FormField label="Date" type="date" value={newExpense.date} onChange={v => setNewExpense(p => ({ ...p, date: v }))} />
                 <FormField label="Description" value={newExpense.description} onChange={v => setNewExpense(p => ({ ...p, description: v }))} placeholder="What was done" />
                 <FormField label="Amount" prefix="$" value={newExpense.amount} onChange={v => setNewExpense(p => ({ ...p, amount: v }))} />
@@ -173,13 +173,13 @@ export default function TaxTracker() {
               </div>
               <div className="space-y-2">
                 {batchRows.map((row, i) => (
-                  <div key={i} className="grid grid-cols-3 sm:grid-cols-4 gap-2 items-end">
+                  <div key={i} className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-2 items-end">
                     <FormField label={i === 0 ? 'Description' : ''} value={row.description} onChange={v => setBatchRows(prev => prev.map((r, j) => j === i ? { ...r, description: v } : r))} placeholder="What was done" />
                     <FormField label={i === 0 ? 'Amount' : ''} prefix="$" value={row.amount} onChange={v => setBatchRows(prev => prev.map((r, j) => j === i ? { ...r, amount: v } : r))} />
                     <FormField label={i === 0 ? 'Category' : ''} type="select" value={row.category} onChange={v => setBatchRows(prev => prev.map((r, j) => j === i ? { ...r, category: v } : r))} options={categories} />
                     {batchRows.length > 1 && (
-                      <button onClick={() => setBatchRows(prev => prev.filter((_, j) => j !== i))} className="text-slate-400 hover:text-red-500 pb-2">
-                        <Trash2 size={14} />
+                      <button onClick={() => setBatchRows(prev => prev.filter((_, j) => j !== i))} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500">
+                        <Trash2 size={16} />
                       </button>
                     )}
                   </div>
@@ -200,7 +200,7 @@ export default function TaxTracker() {
           {recurringMode && (
             <>
               <p className="text-xs text-slate-500 dark:text-slate-400">Generate the same expense across multiple months. Great for insurance premiums, lawn care, pest control, etc.</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <FormField label="Description" value={recurringTemplate.description} onChange={v => setRecurringTemplate(p => ({ ...p, description: v }))} placeholder="e.g. Lawn care" />
                 <FormField label="Amount (each)" prefix="$" value={recurringTemplate.amount} onChange={v => setRecurringTemplate(p => ({ ...p, amount: v }))} />
                 <FormField label="Category" type="select" value={recurringTemplate.category} onChange={v => setRecurringTemplate(p => ({ ...p, category: v }))} options={categories} />
@@ -219,31 +219,52 @@ export default function TaxTracker() {
         </div>
 
         {expenses.length > 0 && (
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Date</th>
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Description</th>
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Category</th>
-                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Amount</th>
-                  <th className="py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {expenses.map((exp, i) => (
-                  <tr key={exp.id || i} className="border-b border-slate-50 dark:border-slate-700/50">
-                    <td className="py-2 text-slate-700 dark:text-slate-300">{exp.date}</td>
-                    <td className="py-2 text-slate-700 dark:text-slate-300">{exp.description}</td>
-                    <td className="py-2"><StatusBadge status="blue">{exp.category}</StatusBadge></td>
-                    <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(exp.amount)}</td>
-                    <td className="py-2 text-right">
-                      <button onClick={() => removeExpense(i)} className="text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
-                    </td>
+          <div className="mt-4">
+            {/* Mobile cards */}
+            <div className="block sm:hidden space-y-3">
+              {expenses.map((exp, i) => (
+                <div key={exp.id || i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{exp.description || 'No description'}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{exp.date}</p>
+                    </div>
+                    <button onClick={() => removeExpense(i)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500"><Trash2 size={16} /></button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <StatusBadge status="blue">{exp.category}</StatusBadge>
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{formatCurrency(exp.amount)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Date</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Description</th>
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Category</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Amount</th>
+                    <th className="py-2"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {expenses.map((exp, i) => (
+                    <tr key={exp.id || i} className="border-b border-slate-50 dark:border-slate-700/50">
+                      <td className="py-2 text-slate-700 dark:text-slate-300">{exp.date}</td>
+                      <td className="py-2 text-slate-700 dark:text-slate-300">{exp.description}</td>
+                      <td className="py-2"><StatusBadge status="blue">{exp.category}</StatusBadge></td>
+                      <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(exp.amount)}</td>
+                      <td className="py-2 text-right">
+                        <button onClick={() => removeExpense(i)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500"><Trash2 size={14} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </Card>

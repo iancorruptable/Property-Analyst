@@ -101,47 +101,75 @@ export default function VATracker() {
       {/* Scenario Table */}
       <Card title="Future Home Purchase Scenarios (Keep Current Home + Buy Another)">
         {va ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Future Price</th>
-                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Zero-Down?</th>
-                  <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Est. Down Payment</th>
-                  <th className="text-left py-2 pl-4 text-slate-600 dark:text-slate-400 font-medium">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {futurePrices.map(price => {
-                  const dp = calcDownPayment(price, va.zeroDownPower);
-                  const zeroDown = dp === 0;
-                  return (
-                    <tr key={price} className="border-b border-slate-50 dark:border-slate-700/50">
-                      <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{formatCurrency(price)}</td>
-                      <td className="py-2 text-right">
-                        <StatusBadge status={zeroDown ? 'green' : 'yellow'}>
-                          {zeroDown ? 'Yes' : 'No'}
-                        </StatusBadge>
-                      </td>
-                      <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">
-                        {dp > 0 ? formatCurrency(dp) : '$0'}
-                      </td>
-                      <td className="py-2 pl-4 text-xs text-slate-500 dark:text-slate-400">
-                        {zeroDown ? 'Within remaining entitlement' : `25% of amount above ${formatCurrency(va.zeroDownPower)}`}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Mobile card view */}
+            <div className="block sm:hidden space-y-3">
+              {futurePrices.map(price => {
+                const dp = calcDownPayment(price, va.zeroDownPower);
+                const zeroDown = dp === 0;
+                return (
+                  <div key={price} className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{formatCurrency(price)}</span>
+                      <StatusBadge status={zeroDown ? 'green' : 'yellow'}>
+                        {zeroDown ? 'Zero Down' : 'Down Req.'}
+                      </StatusBadge>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-500 dark:text-slate-400">Est. Down Payment</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">{dp > 0 ? formatCurrency(dp) : '$0'}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {zeroDown ? 'Within remaining entitlement' : `25% of amount above ${formatCurrency(va.zeroDownPower)}`}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Desktop table view */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700">
+                    <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Future Price</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Zero-Down?</th>
+                    <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Est. Down Payment</th>
+                    <th className="text-left py-2 pl-4 text-slate-600 dark:text-slate-400 font-medium">Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {futurePrices.map(price => {
+                    const dp = calcDownPayment(price, va.zeroDownPower);
+                    const zeroDown = dp === 0;
+                    return (
+                      <tr key={price} className="border-b border-slate-50 dark:border-slate-700/50">
+                        <td className="py-2 text-slate-700 dark:text-slate-300 font-medium">{formatCurrency(price)}</td>
+                        <td className="py-2 text-right">
+                          <StatusBadge status={zeroDown ? 'green' : 'yellow'}>
+                            {zeroDown ? 'Yes' : 'No'}
+                          </StatusBadge>
+                        </td>
+                        <td className="py-2 text-right font-medium text-slate-900 dark:text-slate-100">
+                          {dp > 0 ? formatCurrency(dp) : '$0'}
+                        </td>
+                        <td className="py-2 pl-4 text-xs text-slate-500 dark:text-slate-400">
+                          {zeroDown ? 'Within remaining entitlement' : `25% of amount above ${formatCurrency(va.zeroDownPower)}`}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+
         ) : (
           <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">Enter loan data to see scenarios.</p>
         )}
       </Card>
 
       {/* Scenario Comparison */}
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card title="Sell + Restore Entitlement">
           <div className="space-y-2 text-sm">
             <p className="text-slate-600 dark:text-slate-400">If you sell and pay off the loan:</p>
@@ -198,7 +226,7 @@ export default function VATracker() {
             { action: 'Speak with VA-approved lender about second-use scenarios', done: false, priority: 'yellow' },
             { action: 'Check if one-time restoration has been previously used', done: state.vaBenefit.previousRestoration === 'no', priority: 'yellow' },
           ].map((item, i) => (
-            <div key={i} className="flex items-center gap-3 py-1.5">
+            <div key={i} className="flex items-center gap-3 py-1.5 min-h-[44px]">
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${item.done ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}>
                 {item.done ? '✓' : i + 1}
               </span>

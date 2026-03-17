@@ -81,7 +81,7 @@ export default function Compliance() {
           {disclosures.map(d => {
             const isDone = complianceData[d.key]?.done;
             return (
-              <button key={d.key} onClick={() => toggleDisclosure(d.key)} className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left">
+              <button key={d.key} onClick={() => toggleDisclosure(d.key)} className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]">
                 {isDone ? <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />}
                 <span className={`text-sm flex-1 ${isDone ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-700 dark:text-slate-300'}`}>{d.label}</span>
                 {d.required && <StatusBadge status="red">Required</StatusBadge>}
@@ -107,7 +107,29 @@ export default function Compliance() {
 
       {/* Key Deadlines */}
       <Card title="Key FL Landlord Deadlines">
-        <div className="overflow-x-auto">
+        {/* Mobile card view */}
+        <div className="block sm:hidden space-y-3">
+          {[
+            ['30 days after receipt', 'Notify tenant where security deposit is held', '83.49(1)'],
+            ['12 hours minimum', 'Written notice before entering unit', '83.53'],
+            ['3 days', 'Notice for non-payment of rent', '83.56(3)'],
+            ['7 days', 'Notice to cure lease violation', '83.56(2)'],
+            ['15 days', 'Notice to terminate month-to-month', '83.57'],
+            ['15 days after move-out', 'Return deposit (no claim)', '83.49(3)(a)'],
+            ['30 days after move-out', 'Send written claim on deposit', '83.49(3)(a)'],
+            ['Annual', 'Homestead exemption filing (if removing)', 'County'],
+          ].map(([deadline, action, statute], i) => (
+            <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{deadline}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{statute}</span>
+              </div>
+              <p className="text-sm text-slate-700 dark:text-slate-300">{action}</p>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table view */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">

@@ -60,7 +60,7 @@ export default function Alerts() {
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 15 — Consolidated alert center</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-xl p-4 text-center">
           <p className="text-2xl font-bold text-red-700 dark:text-red-400">{red.length}</p>
           <p className="text-xs text-red-600 dark:text-red-400">Urgent</p>
@@ -79,7 +79,7 @@ export default function Alerts() {
         <Card title="Urgent — Immediate Action Required" status="red">
           <div className="space-y-2">
             {red.map((a, i) => (
-              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 min-h-[44px] rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                 <StatusDot status="red" />
                 <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{a.message}</span>
                 <span className="text-xs text-slate-400 dark:text-slate-500">{a.deadline}</span>
@@ -94,7 +94,7 @@ export default function Alerts() {
         <Card title="Watch — Action Needed Soon" status="yellow">
           <div className="space-y-2">
             {yellow.map((a, i) => (
-              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
+              <Link key={i} to={a.link} className="flex items-center gap-3 p-2 min-h-[44px] rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
                 <StatusDot status="yellow" />
                 <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{a.message}</span>
                 <span className="text-xs text-slate-400 dark:text-slate-500">{a.deadline}</span>
@@ -120,7 +120,20 @@ export default function Alerts() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Card title="Monthly Recurring">
-          <div className="overflow-x-auto">
+          {/* Mobile cards */}
+          <div className="block sm:hidden space-y-3">
+            {recurringMonthly.map((r, i) => (
+              <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{r.day}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">{r.responsible}</span>
+                </div>
+                <p className="text-sm text-slate-700 dark:text-slate-300">{r.item}</p>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-slate-200 dark:border-slate-700">
                 <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Day</th>
@@ -141,7 +154,20 @@ export default function Alerts() {
         </Card>
 
         <Card title="Annual Deadlines">
-          <div className="overflow-x-auto">
+          {/* Mobile cards */}
+          <div className="block sm:hidden space-y-3">
+            {annualDeadlines.map((d, i) => (
+              <div key={i} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 space-y-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{d.month}</span>
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Due: {d.deadline}</span>
+                </div>
+                <p className="text-sm text-slate-700 dark:text-slate-300">{d.item}</p>
+              </div>
+            ))}
+          </div>
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead><tr className="border-b border-slate-200 dark:border-slate-700">
                 <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Timing</th>

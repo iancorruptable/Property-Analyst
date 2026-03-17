@@ -51,7 +51,7 @@ export default function Appreciation() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: 'Purchase Price', value: purchasePrice ? formatCurrency(purchasePrice) : '—' },
           { label: 'Latest Est. Value', value: latestValue ? formatCurrency(latestValue) : '—' },
@@ -69,7 +69,7 @@ export default function Appreciation() {
         {/* Add Value Estimate */}
         <Card title="Add Value Estimate">
           <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <FormField label="Date" type="date" value={newEstimate.date} onChange={v => setNewEstimate(p => ({ ...p, date: v }))} />
               <FormField label="Value" prefix="$" value={newEstimate.value} onChange={v => setNewEstimate(p => ({ ...p, value: v }))} placeholder="340,000" />
               <FormField label="Source" value={newEstimate.source} onChange={v => setNewEstimate(p => ({ ...p, source: v }))} placeholder="Zillow, Appraisal..." />
@@ -104,7 +104,7 @@ export default function Appreciation() {
                       </div>
                       <p className="text-xs text-slate-400 dark:text-slate-500">{est.date} — {est.source || 'No source'}</p>
                     </div>
-                    <button onClick={() => removeEstimate(i)} className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400">
+                    <button onClick={() => removeEstimate(i)} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400">
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -151,7 +151,24 @@ export default function Appreciation() {
 
       {/* Future Projections */}
       <Card title="Value Projections (from current estimate)">
-        <div className="overflow-x-auto">
+        {/* Mobile cards */}
+        <div className="block sm:hidden space-y-4">
+          {projections.map(p => (
+            <div key={p.rate} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 space-y-2">
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{p.rate}% Annual Rate</p>
+              <div className="grid grid-cols-2 gap-2">
+                {p.values.map(v => (
+                  <div key={v.year} className="space-y-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{v.year} {v.year === 1 ? 'Year' : 'Years'}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{latestValue ? formatCurrency(v.value) : '—'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-700">

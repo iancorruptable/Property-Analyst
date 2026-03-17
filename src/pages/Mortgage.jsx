@@ -50,7 +50,7 @@ export default function Mortgage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: 'Loan Balance', value: balance ? formatCurrency(balance) : '—' },
           { label: 'Interest Rate', value: rate ? formatPercent(rate) : '—' },
@@ -69,8 +69,8 @@ export default function Mortgage() {
         {/* Equity Visualization */}
         <Card title="Equity Position">
           {pieData.length > 0 ? (
-            <div className="flex items-center gap-6">
-              <ResponsiveContainer width={160} height={160}>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <ResponsiveContainer width="100%" height={160} className="max-w-[160px]">
                 <PieChart>
                   <Pie data={pieData} dataKey="value" innerRadius={40} outerRadius={70} paddingAngle={2}>
                     {pieData.map((entry, i) => (
@@ -161,7 +161,7 @@ export default function Mortgage() {
         <Card title="Rate Advantage Analysis" status={realCostOfDebt < 0 ? 'green' : 'yellow'}>
           <div className="space-y-4">
             {/* Comparison inputs */}
-            <div className="flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-slate-500 dark:text-slate-400">Today's market rate</span>
                 <input
@@ -169,7 +169,7 @@ export default function Mortgage() {
                   value={state.rental?.currentMarketRate || ''}
                   onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'currentMarketRate', value: e.target.value })}
                   placeholder="6.5"
-                  className="w-16 px-2 py-1 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+                  className="w-20 px-2 py-2 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 min-h-[44px]"
                 />
                 <span className="text-slate-400 dark:text-slate-500">%</span>
               </div>
@@ -180,7 +180,7 @@ export default function Mortgage() {
                   value={state.rental?.inflationRate || ''}
                   onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'inflationRate', value: e.target.value })}
                   placeholder="3.2"
-                  className="w-16 px-2 py-1 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+                  className="w-20 px-2 py-2 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 min-h-[44px]"
                 />
                 <span className="text-slate-400 dark:text-slate-500">%</span>
               </div>
