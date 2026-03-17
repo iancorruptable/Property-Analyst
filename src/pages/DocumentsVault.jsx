@@ -398,28 +398,27 @@ export default function DocumentsVault() {
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-4 sm:p-8 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-xl p-3 sm:p-4 text-center transition-colors ${
               dragOver
                 ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
                 : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
             }`}
           >
-            <Upload size={32} className="mx-auto text-slate-400 dark:text-slate-500 mb-3" />
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1 hidden sm:block">Drag and drop files here</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1 sm:hidden">Upload files</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mb-3 hidden sm:block">or</p>
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 mb-3">
+            <Upload size={20} className="mx-auto text-slate-400 dark:text-slate-500 mb-2" />
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-1 hidden sm:block">Drag and drop files here, or</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-2 sm:hidden">Upload files</p>
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-2 mb-2">
               <input
                 type="text"
                 value={customName}
                 onChange={e => setCustomName(e.target.value)}
                 placeholder="Document name (optional)"
-                className="px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                className="px-2.5 py-2 min-h-[44px] sm:min-h-0 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400"
               />
               <select
                 value={customCategory}
                 onChange={e => setCustomCategory(e.target.value)}
-                className="px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                className="px-2.5 py-2 min-h-[44px] sm:min-h-0 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
               >
                 <option value="">Category...</option>
                 {customCategories.map(c => (
@@ -428,9 +427,9 @@ export default function DocumentsVault() {
               </select>
               <button
                 onClick={() => customFileRef.current?.click()}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 min-h-[44px] sm:min-h-0 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
               >
-                <FolderPlus size={16} /> Choose Files
+                <FolderPlus size={14} /> Choose Files
               </button>
             </div>
             <input

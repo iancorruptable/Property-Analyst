@@ -61,6 +61,11 @@ export default function DecisionEngine() {
   // Selling scenario
   const sellingCosts = latestValue * 0.08; // ~8% closing + agent
   const netFromSale = equity - sellingCosts;
+  const isActiveDuty = state.vaBenefit?.activeDutyStatus === 'yes';
+  const cgWindow = parseInt(state.vaBenefit?.capitalGainsExclusionYears || (isActiveDuty ? 15 : 5));
+  const purchaseDate = state.property?.purchaseDate;
+  const cgDeadline = purchaseDate ? new Date(new Date(purchaseDate).setFullYear(new Date(purchaseDate).getFullYear() + cgWindow)) : null;
+  const cgYearsLeft = cgDeadline ? Math.max(0, ((cgDeadline - new Date()) / (365.25 * 24 * 60 * 60 * 1000))).toFixed(1) : null;
 
   return (
     <div className="space-y-6">
@@ -142,7 +147,9 @@ export default function DecisionEngine() {
               ['Net Proceeds', netFromSale ? formatCurrency(netFromSale) : '—'],
               ['Rate Loss', rate > 0 && monthlySavings > 0 ? `Lose ${rate}% — costs ${formatCurrency(annualSavings)}/yr more` : '—'],
               ['VA Entitlement', 'Restored after payoff'],
-              ['Tax Impact', 'Capital gains if >$250K profit'],
+              ['Tax Impact', isActiveDuty
+                ? `${cgWindow}-yr military window${cgYearsLeft ? ` — ${cgYearsLeft} yrs left` : ''} (§121 exclusion)`
+                : 'Capital gains if >$250K profit (5-yr window)'],
             ].map(([l, v]) => (
               <div key={l} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50">
                 <span className="text-slate-600 dark:text-slate-400">{l}</span>

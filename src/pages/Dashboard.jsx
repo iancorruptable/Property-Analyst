@@ -137,10 +137,10 @@ export default function Dashboard() {
           status={balance ? 'green' : 'red'}
         />
         <MetricCard
-          label="Estimated Equity"
-          value={hasData && balance ? formatCurrency(equity) : '—'}
-          sublabel={hasData && balance ? `LTV: ${formatPercent(ltv)}` : ''}
-          status={equity > 0 ? 'green' : equity < 0 ? 'red' : 'gray'}
+          label="LTV Ratio"
+          value={hasData && balance ? formatPercent(ltv) : '—'}
+          sublabel={ltv < 80 ? 'Healthy' : ltv < 95 ? 'High leverage' : 'Very high'}
+          status={ltv < 80 ? 'green' : ltv < 95 ? 'yellow' : 'red'}
         />
       </div>
 

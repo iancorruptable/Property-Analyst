@@ -18,7 +18,11 @@ export default function Alerts() {
 
     // YELLOW alerts
     if (!state.property.hoaRentalRestrictions) add('yellow', 'HOA rental restrictions unverified', '/property', 'Before listing');
-    if (!state.taxesInsurance.homesteadExemption) add('yellow', 'Homestead exemption status unknown', '/tax', 'Before conversion');
+    if (!state.taxesInsurance.homesteadExemption) {
+      add('yellow', state.vaBenefit?.activeDutyStatus === 'yes'
+        ? 'Homestead exemption status unknown — active duty can RETAIN homestead + 3% SOH cap'
+        : 'Homestead exemption status unknown', '/tax', 'Before conversion');
+    }
     if (!state.propertyManager.companyName) add('yellow', 'No property manager selected', '/pm-oversight', 'Before PCS');
     if (!state.taxesInsurance.hasUmbrella || state.taxesInsurance.hasUmbrella === 'no') add('yellow', 'No umbrella liability policy', '/insurance', 'Before tenant');
     add('yellow', 'Hurricane season prep review', '/maintenance', 'Before Jun 1');
@@ -46,7 +50,7 @@ export default function Alerts() {
   ];
 
   const annualDeadlines = [
-    { month: 'Jan–Mar', item: 'Homestead exemption filing window', deadline: 'March 1' },
+    { month: 'Jan–Mar', item: 'Homestead exemption filing window (active duty: retain, do not remove)', deadline: 'March 1' },
     { month: 'Feb', item: 'Tax document preparation', deadline: 'April 15' },
     { month: 'May', item: 'Hurricane prep review', deadline: 'June 1' },
     { month: 'Nov', item: 'FL property tax (4% discount)', deadline: 'Nov 30' },
