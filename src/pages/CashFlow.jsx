@@ -1,6 +1,6 @@
 import { useProperty } from '../store/PropertyContext';
 import Card from '../components/Card';
-import { formatCurrency, parseCurrency, calcCashFlow, calcBreakEvenRent } from '../utils/calculations';
+import { formatCurrency, parseCurrency, calcCashFlow, calcBreakEvenRent, calcDepreciation } from '../utils/calculations';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function CashFlow() {
@@ -17,6 +17,19 @@ export default function CashFlow() {
   const updateReserveCash = (value) => {
     dispatch({ type: 'SET_FIELD', section: 'rental', field: 'reserveCash', value });
   };
+
+  // After-tax cash flow
+  const purchasePrice = parseCurrency(state.property?.purchasePrice);
+  const landValue = parseCurrency(state.taxesInsurance?.countyLandValue);
+  const dep = purchasePrice > 0 ? calcDepreciation(purchasePrice, landValue) : null;
+  const monthlyDepreciation = dep?.monthly || 0;
+  // Rough mortgage interest estimate: early in loan ~70% of P&I is interest
+  const monthlyMortgageInterest = cf.debtService * (parseFloat(state.mortgage?.interestRate || 0) / 100) * 0.7;
+  // Taxable rental income = rent - all deductible expenses - depreciation - mortgage interest
+  const monthlyTaxableIncome = cf.effectiveGross - cf.totalOpEx - monthlyMortgageInterest - monthlyDepreciation;
+  const marginalTaxRate = parseFloat(state.rental?.marginalTaxRate || 22) / 100;
+  const monthlyTaxImpact = monthlyTaxableIncome * marginalTaxRate; // positive = tax owed, negative = tax savings
+  const afterTaxCashFlow = cf.cashFlow - monthlyTaxImpact;
 
   // Vacancy stress test
   const stressTest = [1, 2, 3].map(months => {
@@ -99,15 +112,28 @@ export default function CashFlow() {
               Money set aside for maintenance, repairs, and capital expenditures
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500 dark:text-slate-400">$</span>
-            <input
-              type="text"
-              value={state.rental?.reserveCash || ''}
-              onChange={e => updateReserveCash(e.target.value)}
-              placeholder="8,000"
-              className="w-32 px-3 py-2 text-right text-lg font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-500 dark:text-slate-400">$</span>
+              <input
+                type="text"
+                value={state.rental?.reserveCash || ''}
+                onChange={e => updateReserveCash(e.target.value)}
+                placeholder="8,000"
+                className="w-32 px-3 py-2 text-right text-lg font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <label className="text-xs text-slate-500 dark:text-slate-400">Tax bracket</label>
+              <input
+                type="text"
+                value={state.rental?.marginalTaxRate || ''}
+                onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'marginalTaxRate', value: e.target.value })}
+                placeholder="22"
+                className="w-16 px-2 py-2 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <span className="text-sm text-slate-500 dark:text-slate-400">%</span>
+            </div>
           </div>
         </div>
         {hasData && reserveCash > 0 && (
@@ -175,9 +201,48 @@ export default function CashFlow() {
               <span className="text-slate-700 dark:text-slate-300">({formatCurrency(cf.debtService)})</span>
             </div>
             <div className={`flex justify-between py-1.5 px-2 rounded text-sm font-bold mt-1 ${cf.cashFlow >= 0 ? 'bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300'}`}>
-              <span>Net Cash Flow</span>
+              <span>Net Cash Flow (pre-tax)</span>
               <span>{hasData ? formatCurrency(cf.cashFlow) : '—'}</span>
             </div>
+
+            {/* After-Tax Section */}
+            {hasData && dep && (
+              <>
+                <div className="border-t border-slate-200 dark:border-slate-600 mt-3 pt-2" />
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase px-2 mb-1">Tax Impact (estimated)</p>
+                <div className="flex justify-between py-1 px-2 text-sm">
+                  <span className="text-slate-600 dark:text-slate-400">Depreciation (paper)</span>
+                  <span className="text-green-600 dark:text-green-400">({formatCurrency(monthlyDepreciation)})</span>
+                </div>
+                <div className="flex justify-between py-1 px-2 text-sm">
+                  <span className="text-slate-600 dark:text-slate-400">Mortgage Interest (est.)</span>
+                  <span className="text-green-600 dark:text-green-400">({formatCurrency(monthlyMortgageInterest)})</span>
+                </div>
+                <div className="flex justify-between py-1 px-2 text-sm">
+                  <span className="text-slate-600 dark:text-slate-400">Taxable Rental Income</span>
+                  <span className={`font-medium ${monthlyTaxableIncome < 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                    {formatCurrency(monthlyTaxableIncome)}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1 px-2 text-sm">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Tax @ {(marginalTaxRate * 100).toFixed(0)}% {monthlyTaxImpact < 0 ? '(savings)' : ''}
+                  </span>
+                  <span className={monthlyTaxImpact < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                    {monthlyTaxImpact < 0 ? '+' : '−'}{formatCurrency(Math.abs(monthlyTaxImpact))}
+                  </span>
+                </div>
+                <div className={`flex justify-between py-1.5 px-2 rounded text-sm font-bold mt-1 ${afterTaxCashFlow >= 0 ? 'bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300'}`}>
+                  <span>After-Tax Cash Flow</span>
+                  <span>{formatCurrency(afterTaxCashFlow)}</span>
+                </div>
+                {monthlyTaxableIncome < 0 && (
+                  <p className="text-xs text-green-700 dark:text-green-400 px-2 mt-1">
+                    Depreciation creates a paper loss — may offset other income. Consult your CPA.
+                  </p>
+                )}
+              </>
+            )}
           </div>
         </Card>
 
