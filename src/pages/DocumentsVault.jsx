@@ -301,66 +301,54 @@ export default function DocumentsVault() {
                 const Icon = hasUploadedFile ? getFileIcon(doc.fileType) : FileText;
 
                 return (
-                  <div key={item.key} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 py-2.5 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-50 dark:border-slate-700/30 last:border-0">
-                    {/* Top row: status icon, file icon, label */}
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {/* Status icon */}
-                      <button onClick={() => {
-                        if (hasFile && !hasUploadedFile) {
-                          handleRemoveFile(item.key);
-                        } else if (!hasFile) {
-                          updateVault(item.key, { onFile: true, date: new Date().toISOString().split('T')[0] });
-                        }
-                      }} className="flex-shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center">
-                        {hasFile ? <CheckCircle2 size={20} className="text-green-500" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600" />}
-                      </button>
+                  <div key={item.key} className="group flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    {/* Status icon */}
+                    <button onClick={() => {
+                      if (hasFile && !hasUploadedFile) {
+                        handleRemoveFile(item.key);
+                      } else if (!hasFile) {
+                        updateVault(item.key, { onFile: true, date: new Date().toISOString().split('T')[0] });
+                      }
+                    }} className="flex-shrink-0">
+                      {hasFile ? <CheckCircle2 size={20} className="text-green-500" /> : <Circle size={20} className="text-slate-300 dark:text-slate-600" />}
+                    </button>
 
-                      {/* File icon */}
-                      <Icon size={16} className={`flex-shrink-0 ${hasUploadedFile ? 'text-blue-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                    {/* File icon */}
+                    <Icon size={16} className={`flex-shrink-0 ${hasUploadedFile ? 'text-blue-500' : 'text-slate-400 dark:text-slate-500'}`} />
 
-                      {/* Label and file info */}
-                      <div className="flex-1 min-w-0">
-                        <span className={`text-sm block ${hasFile ? 'text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>
-                          {item.label}
+                    {/* Label and file info */}
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-sm block ${hasFile ? 'text-slate-500 dark:text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {item.label}
+                      </span>
+                      {hasUploadedFile && (
+                        <span className="text-xs text-slate-400 dark:text-slate-500 block truncate">
+                          {doc.fileName} &middot; {formatFileSize(doc.fileSize)} &middot; {doc.date}
                         </span>
-                        {hasUploadedFile && (
-                          <span className="text-xs text-slate-400 dark:text-slate-500 block truncate">
-                            {doc.fileName} &middot; {formatFileSize(doc.fileSize)} &middot; {doc.date}
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
 
-                    {/* Action buttons - stacked on mobile */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0 sm:ml-0 ml-[44px]">
-                      {hasUploadedFile ? (
-                        <div className="flex items-center gap-1 sm:gap-1.5">
-                          <button onClick={() => handleViewFile(item.key, doc.fileName)} className="p-2.5 sm:p-1.5 rounded-md text-slate-500 sm:text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center gap-1.5" title="Preview">
-                            <Eye size={16} />
-                            <span className="text-xs sm:hidden">View</span>
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {hasUploadedFile && (
+                        <>
+                          <button onClick={() => handleViewFile(item.key, doc.fileName)} className="p-1 text-slate-400 hover:text-blue-500" title="Preview">
+                            <Eye size={14} />
                           </button>
-                          <button onClick={() => handleDownloadFile(item.key, doc.fileName)} className="p-2.5 sm:p-1.5 rounded-md text-slate-500 sm:text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center gap-1.5" title="Download">
-                            <Download size={16} />
-                            <span className="text-xs sm:hidden">Save</span>
+                          <button onClick={() => handleDownloadFile(item.key, doc.fileName)} className="p-1 text-slate-400 hover:text-green-500" title="Download">
+                            <Download size={14} />
                           </button>
-                          <button onClick={() => {
-                            setUploadingKey(item.key);
-                            docUploadRef.current?.click();
-                          }} className="p-2.5 sm:p-1.5 rounded-md text-slate-500 sm:text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center gap-1.5" title="Replace file">
-                            <Paperclip size={16} />
-                            <span className="text-xs sm:hidden">Replace</span>
-                          </button>
-                          <button onClick={() => handleRemoveFile(item.key)} className="p-2.5 sm:p-1.5 rounded-md text-slate-500 sm:text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center gap-1.5" title="Remove">
-                            <Trash2 size={16} />
-                            <span className="text-xs sm:hidden">Delete</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <button onClick={() => {
-                          setUploadingKey(item.key);
-                          docUploadRef.current?.click();
-                        }} className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:border-blue-600 dark:hover:text-blue-400 transition-colors">
-                          <Upload size={14} /> Upload
+                        </>
+                      )}
+                      <button onClick={() => {
+                        setUploadingKey(item.key);
+                        docUploadRef.current?.click();
+                      }} className="p-1 text-slate-400 hover:text-blue-500" title={hasUploadedFile ? 'Replace file' : 'Upload file'}>
+                        <Paperclip size={14} />
+                      </button>
+                      {hasFile && (
+                        <button onClick={() => handleRemoveFile(item.key)} className="p-1 text-slate-400 hover:text-red-500" title="Remove">
+                          <Trash2 size={14} />
                         </button>
                       )}
                     </div>
@@ -398,27 +386,27 @@ export default function DocumentsVault() {
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-3 sm:p-4 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
               dragOver
                 ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-500'
                 : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
             }`}
           >
-            <Upload size={20} className="mx-auto text-slate-400 dark:text-slate-500 mb-2" />
-            <p className="text-xs text-slate-600 dark:text-slate-400 mb-1 hidden sm:block">Drag and drop files here, or</p>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mb-2 sm:hidden">Upload files</p>
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-2 mb-2">
+            <Upload size={32} className="mx-auto text-slate-400 dark:text-slate-500 mb-3" />
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Drag and drop files here</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">or</p>
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-3">
               <input
                 type="text"
                 value={customName}
                 onChange={e => setCustomName(e.target.value)}
                 placeholder="Document name (optional)"
-                className="px-2.5 py-2 min-h-[44px] sm:min-h-0 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400"
               />
               <select
                 value={customCategory}
                 onChange={e => setCustomCategory(e.target.value)}
-                className="px-2.5 py-2 min-h-[44px] sm:min-h-0 text-xs border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
               >
                 <option value="">Category...</option>
                 {customCategories.map(c => (
@@ -427,9 +415,9 @@ export default function DocumentsVault() {
               </select>
               <button
                 onClick={() => customFileRef.current?.click()}
-                className="flex items-center justify-center gap-1.5 px-3 py-2 min-h-[44px] sm:min-h-0 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
               >
-                <FolderPlus size={14} /> Choose Files
+                <FolderPlus size={16} /> Choose Files
               </button>
             </div>
             <input
