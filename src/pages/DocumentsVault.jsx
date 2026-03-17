@@ -1,6 +1,6 @@
 import { useProperty } from '../store/PropertyContext';
 import Card from '../components/Card';
-import { CheckCircle2, Circle, FileText, Download, Upload, Trash2, Eye, Paperclip, FolderPlus, File, Image, FileSpreadsheet, X } from 'lucide-react';
+import { CheckCircle2, Circle, FileText, Download, Upload, Trash2, Eye, FolderPlus, File, Image, FileSpreadsheet, X } from 'lucide-react';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { saveFile, getFile, deleteFile, getAllKeys, getStorageUsage, formatFileSize, readFileAsDataURL } from '../utils/fileStore';
 
@@ -342,7 +342,7 @@ export default function DocumentsVault() {
                             setUploadingKey(item.key);
                             docUploadRef.current?.click();
                           }} className="p-1.5 rounded-md text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30" title="Replace file">
-                            <Paperclip size={16} />
+                            <Upload size={16} />
                           </button>
                           <button onClick={() => handleRemoveFile(item.key)} className="p-1.5 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30" title="Remove">
                             <Trash2 size={16} />
@@ -353,7 +353,7 @@ export default function DocumentsVault() {
                           setUploadingKey(item.key);
                           docUploadRef.current?.click();
                         }} className="p-1.5 rounded-md text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30" title="Upload file">
-                          <Paperclip size={16} />
+                          <Upload size={16} />
                         </button>
                       )}
                     </div>
