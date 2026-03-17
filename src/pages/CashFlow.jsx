@@ -1,7 +1,7 @@
 import { useProperty } from '../store/PropertyContext';
 import Card from '../components/Card';
-import { formatCurrency, parseCurrency, calcCashFlow, calcBreakEvenRent, calcDepreciation } from '../utils/calculations';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { formatCurrency, parseCurrency, calcCashFlow, calcBreakEvenRent, calcDepreciation, calcMultiYearCashFlow } from '../utils/calculations';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line, Legend } from 'recharts';
 
 export default function CashFlow() {
   const { state, dispatch } = useProperty();
@@ -30,6 +30,9 @@ export default function CashFlow() {
   const marginalTaxRate = parseFloat(state.rental?.marginalTaxRate || 22) / 100;
   const monthlyTaxImpact = monthlyTaxableIncome * marginalTaxRate; // positive = tax owed, negative = tax savings
   const afterTaxCashFlow = cf.cashFlow - monthlyTaxImpact;
+
+  // Multi-year projections
+  const multiYear = hasData ? calcMultiYearCashFlow(state, 10) : [];
 
   // Vacancy stress test
   const stressTest = [1, 2, 3].map(months => {
@@ -348,6 +351,92 @@ export default function CashFlow() {
               ))}
             </tbody>
           </table>
+        </div>
+      </Card>
+
+      {/* Multi-Year Projection */}
+      <Card title="10-Year Cash Flow Projection">
+        <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Annual rent increase</label>
+              <input
+                type="text"
+                value={state.rental?.rentEscalationPercent || ''}
+                onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'rentEscalationPercent', value: e.target.value })}
+                placeholder="3"
+                className="w-16 px-2 py-1.5 text-right text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400">%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Annual expense growth</label>
+              <input
+                type="text"
+                value={state.rental?.expenseGrowthPercent || ''}
+                onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'expenseGrowthPercent', value: e.target.value })}
+                placeholder="2"
+                className="w-16 px-2 py-1.5 text-right text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="text-xs text-slate-500 dark:text-slate-400">%</span>
+            </div>
+          </div>
+
+          {hasData && multiYear.length > 0 && (
+            <>
+              <ResponsiveContainer width="100%" height={280}>
+                <LineChart data={multiYear} margin={{ left: 10, right: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-slate-200, #e2e8f0)" />
+                  <XAxis dataKey="year" tick={{ fill: 'currentColor', fontSize: 12 }} label={{ value: 'Year', position: 'insideBottom', offset: -5, fill: 'currentColor', fontSize: 12 }} />
+                  <YAxis tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} tick={{ fill: 'currentColor', fontSize: 12 }} />
+                  <Tooltip formatter={v => formatCurrency(v)} contentStyle={{ backgroundColor: 'var(--color-slate-800, #1e293b)', border: '1px solid var(--color-slate-600, #475569)', borderRadius: '8px', color: '#e2e8f0' }} />
+                  <Legend />
+                  <Line type="monotone" dataKey="preTaxCashFlow" stroke="#3b82f6" name="Pre-Tax" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="afterTaxCashFlow" stroke="#10b981" name="After-Tax" strokeWidth={2} dot={{ r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-700">
+                      <th className="text-left py-2 text-slate-600 dark:text-slate-400 font-medium">Yr</th>
+                      <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Mo. Rent</th>
+                      <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">NOI</th>
+                      <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Pre-Tax CF</th>
+                      <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Tax Impact</th>
+                      <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">After-Tax CF</th>
+                      <th className="text-right py-2 text-slate-600 dark:text-slate-400 font-medium">Cumulative</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {multiYear.map(row => (
+                      <tr key={row.year} className="border-b border-slate-50 dark:border-slate-700/50">
+                        <td className="py-1.5 text-slate-700 dark:text-slate-300 font-medium">{row.year}</td>
+                        <td className="py-1.5 text-right text-slate-700 dark:text-slate-300">{formatCurrency(row.monthlyRent)}</td>
+                        <td className="py-1.5 text-right text-slate-700 dark:text-slate-300">{formatCurrency(row.noi)}</td>
+                        <td className={`py-1.5 text-right font-medium ${row.preTaxCashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                          {formatCurrency(row.preTaxCashFlow)}
+                        </td>
+                        <td className={`py-1.5 text-right ${row.taxImpact < 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {row.taxImpact < 0 ? '+' : ''}{formatCurrency(Math.abs(row.taxImpact))}
+                        </td>
+                        <td className={`py-1.5 text-right font-medium ${row.afterTaxCashFlow >= 0 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                          {formatCurrency(row.afterTaxCashFlow)}
+                        </td>
+                        <td className={`py-1.5 text-right ${row.cumulativeAfterTax >= 0 ? 'text-blue-700 dark:text-blue-400' : 'text-red-700 dark:text-red-400'}`}>
+                          {formatCurrency(row.cumulativeAfterTax)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+          {!hasData && (
+            <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">Enter rent and mortgage data to see projections.</p>
+          )}
         </div>
       </Card>
     </div>

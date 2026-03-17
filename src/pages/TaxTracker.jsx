@@ -4,7 +4,7 @@ import FormField from '../components/FormField';
 import StatusBadge from '../components/StatusBadge';
 import { formatCurrency, parseCurrency, calcDepreciation } from '../utils/calculations';
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Copy, Calendar } from 'lucide-react';
 
 export default function TaxTracker() {
   const { state, dispatch } = useProperty();
@@ -13,7 +13,13 @@ export default function TaxTracker() {
   const landValue = parseCurrency(state.taxesInsurance.countyLandValue);
   const dep = purchasePrice ? calcDepreciation(purchasePrice, landValue) : null;
 
+  const analysisYear = state.analysisYear || new Date().getFullYear();
   const [newExpense, setNewExpense] = useState({ date: '', description: '', amount: '', category: '' });
+  const [batchMode, setBatchMode] = useState(false);
+  const [batchDate, setBatchDate] = useState('');
+  const [batchRows, setBatchRows] = useState([{ description: '', amount: '', category: '' }]);
+  const [recurringMode, setRecurringMode] = useState(false);
+  const [recurringTemplate, setRecurringTemplate] = useState({ description: '', amount: '', category: '', frequency: 'monthly', startMonth: '01', endMonth: '12', year: String(analysisYear) });
 
   const addExpense = () => {
     if (!newExpense.date || !newExpense.amount) return;
@@ -21,13 +27,40 @@ export default function TaxTracker() {
     setNewExpense({ date: '', description: '', amount: '', category: '' });
   };
 
+  const addBatchExpenses = () => {
+    if (!batchDate) return;
+    const valid = batchRows.filter(r => r.amount);
+    valid.forEach((row, i) => {
+      dispatch({ type: 'ADD_TO_ARRAY', section: 'taxExpenses', item: { ...row, date: batchDate, id: Date.now() + i } });
+    });
+    setBatchRows([{ description: '', amount: '', category: '' }]);
+    setBatchDate('');
+  };
+
+  const addRecurringExpenses = () => {
+    const { description, amount, category, frequency, startMonth, endMonth, year } = recurringTemplate;
+    if (!description || !amount) return;
+    const start = parseInt(startMonth);
+    const end = parseInt(endMonth);
+    const step = frequency === 'monthly' ? 1 : frequency === 'quarterly' ? 3 : 12;
+    let id = Date.now();
+    for (let m = start; m <= end; m += step) {
+      const date = `${year}-${String(m).padStart(2, '0')}-01`;
+      dispatch({ type: 'ADD_TO_ARRAY', section: 'taxExpenses', item: { description, amount, category, date, id: id++ } });
+    }
+    setRecurringTemplate({ description: '', amount: '', category: '', frequency: 'monthly', startMonth: '01', endMonth: '12', year: String(analysisYear) });
+  };
+
   const removeExpense = (index) => {
     dispatch({ type: 'REMOVE_FROM_ARRAY', section: 'taxExpenses', index });
   };
 
   const categories = ['repair', 'improvement', 'travel', 'insurance', 'management', 'legal', 'utilities', 'supplies', 'other'];
+
+  // Filter expenses by analysis year
+  const yearExpenses = expenses.filter(e => e.date && e.date.startsWith(String(analysisYear)));
   const totalByCategory = categories.reduce((acc, cat) => {
-    acc[cat] = expenses.filter(e => e.category === cat).reduce((sum, e) => sum + parseCurrency(e.amount), 0);
+    acc[cat] = yearExpenses.filter(e => e.category === cat).reduce((sum, e) => sum + parseCurrency(e.amount), 0);
     return acc;
   }, {});
   const totalExpenses = Object.values(totalByCategory).reduce((a, b) => a + b, 0);
@@ -43,7 +76,7 @@ export default function TaxTracker() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Tax Tracker</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 8 — Depreciation, deductions, and Schedule E prep</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 8 — Depreciation, deductions, and Schedule E prep &middot; Showing <span className="font-semibold text-slate-700 dark:text-slate-300">{analysisYear}</span></p>
       </div>
 
       <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4 text-sm text-yellow-800 dark:text-yellow-300">
@@ -104,15 +137,85 @@ export default function TaxTracker() {
       {/* Expense Tracker */}
       <Card title="Expense Tracker">
         <div className="space-y-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <FormField label="Date" type="date" value={newExpense.date} onChange={v => setNewExpense(p => ({ ...p, date: v }))} />
-            <FormField label="Description" value={newExpense.description} onChange={v => setNewExpense(p => ({ ...p, description: v }))} placeholder="What was done" />
-            <FormField label="Amount" prefix="$" value={newExpense.amount} onChange={v => setNewExpense(p => ({ ...p, amount: v }))} />
-            <FormField label="Category" type="select" value={newExpense.category} onChange={v => setNewExpense(p => ({ ...p, category: v }))} options={categories} />
+          {/* Mode tabs */}
+          <div className="flex gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+            <button onClick={() => { setBatchMode(false); setRecurringMode(false); }} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors ${!batchMode && !recurringMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+              Single Entry
+            </button>
+            <button onClick={() => { setBatchMode(true); setRecurringMode(false); }} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${batchMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+              <Copy size={12} /> Batch (same date)
+            </button>
+            <button onClick={() => { setRecurringMode(true); setBatchMode(false); }} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${recurringMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+              <Calendar size={12} /> Recurring
+            </button>
           </div>
-          <button onClick={addExpense} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-            <Plus size={16} /> Add Expense
-          </button>
+
+          {/* Single entry mode */}
+          {!batchMode && !recurringMode && (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <FormField label="Date" type="date" value={newExpense.date} onChange={v => setNewExpense(p => ({ ...p, date: v }))} />
+                <FormField label="Description" value={newExpense.description} onChange={v => setNewExpense(p => ({ ...p, description: v }))} placeholder="What was done" />
+                <FormField label="Amount" prefix="$" value={newExpense.amount} onChange={v => setNewExpense(p => ({ ...p, amount: v }))} />
+                <FormField label="Category" type="select" value={newExpense.category} onChange={v => setNewExpense(p => ({ ...p, category: v }))} options={categories} />
+              </div>
+              <button onClick={addExpense} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                <Plus size={16} /> Add Expense
+              </button>
+            </>
+          )}
+
+          {/* Batch mode - one date, many expenses */}
+          {batchMode && (
+            <>
+              <div className="w-48">
+                <FormField label="Date for all entries" type="date" value={batchDate} onChange={setBatchDate} />
+              </div>
+              <div className="space-y-2">
+                {batchRows.map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 sm:grid-cols-4 gap-2 items-end">
+                    <FormField label={i === 0 ? 'Description' : ''} value={row.description} onChange={v => setBatchRows(prev => prev.map((r, j) => j === i ? { ...r, description: v } : r))} placeholder="What was done" />
+                    <FormField label={i === 0 ? 'Amount' : ''} prefix="$" value={row.amount} onChange={v => setBatchRows(prev => prev.map((r, j) => j === i ? { ...r, amount: v } : r))} />
+                    <FormField label={i === 0 ? 'Category' : ''} type="select" value={row.category} onChange={v => setBatchRows(prev => prev.map((r, j) => j === i ? { ...r, category: v } : r))} options={categories} />
+                    {batchRows.length > 1 && (
+                      <button onClick={() => setBatchRows(prev => prev.filter((_, j) => j !== i))} className="text-slate-400 hover:text-red-500 pb-2">
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setBatchRows(prev => [...prev, { description: '', amount: '', category: '' }])} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
+                  <Plus size={12} /> Add Row
+                </button>
+                <button onClick={addBatchExpenses} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                  <Plus size={16} /> Add All ({batchRows.filter(r => r.amount).length})
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* Recurring mode - generate entries for date range */}
+          {recurringMode && (
+            <>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Generate the same expense across multiple months. Great for insurance premiums, lawn care, pest control, etc.</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <FormField label="Description" value={recurringTemplate.description} onChange={v => setRecurringTemplate(p => ({ ...p, description: v }))} placeholder="e.g. Lawn care" />
+                <FormField label="Amount (each)" prefix="$" value={recurringTemplate.amount} onChange={v => setRecurringTemplate(p => ({ ...p, amount: v }))} />
+                <FormField label="Category" type="select" value={recurringTemplate.category} onChange={v => setRecurringTemplate(p => ({ ...p, category: v }))} options={categories} />
+                <FormField label="Frequency" type="select" value={recurringTemplate.frequency} onChange={v => setRecurringTemplate(p => ({ ...p, frequency: v }))} options={[{ value: 'monthly', label: 'Monthly' }, { value: 'quarterly', label: 'Quarterly' }, { value: 'annual', label: 'Annual' }]} />
+                <div className="grid grid-cols-2 gap-2">
+                  <FormField label="Start month" type="select" value={recurringTemplate.startMonth} onChange={v => setRecurringTemplate(p => ({ ...p, startMonth: v }))} options={Array.from({ length: 12 }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: new Date(2000, i).toLocaleString('en', { month: 'short' }) }))} />
+                  <FormField label="End month" type="select" value={recurringTemplate.endMonth} onChange={v => setRecurringTemplate(p => ({ ...p, endMonth: v }))} options={Array.from({ length: 12 }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: new Date(2000, i).toLocaleString('en', { month: 'short' }) }))} />
+                </div>
+                <FormField label="Year" value={recurringTemplate.year} onChange={v => setRecurringTemplate(p => ({ ...p, year: v }))} />
+              </div>
+              <button onClick={addRecurringExpenses} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                <Calendar size={16} /> Generate Entries
+              </button>
+            </>
+          )}
         </div>
 
         {expenses.length > 0 && (
@@ -146,7 +249,7 @@ export default function TaxTracker() {
       </Card>
 
       {/* Category Summary */}
-      <Card title="Expense Summary by Category">
+      <Card title={`Expense Summary by Category — ${analysisYear}`}>
         <div className="space-y-2">
           {categories.filter(c => totalByCategory[c] > 0).map(cat => (
             <div key={cat} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50 text-sm">
@@ -162,7 +265,7 @@ export default function TaxTracker() {
       </Card>
 
       {/* Schedule E Preview */}
-      <Card title="Schedule E Preview (Estimated)">
+      <Card title={`Schedule E Preview — ${analysisYear} (Estimated)`}>
         <div className="space-y-2">
           {[
             ['Gross Rental Income', annualRent, false],

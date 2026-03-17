@@ -6,7 +6,7 @@ import {
   ClipboardCheck, DollarSign, Receipt, Scale, Users,
   UserCheck, Wrench, ShieldAlert, Plane, Bell, FolderOpen,
   Brain, FileInput, FileText, Settings, Menu, X, ChevronDown, ChevronRight,
-  Download, Upload
+  Download, Upload, Calendar
 } from 'lucide-react';
 
 const navGroups = [
@@ -182,6 +182,18 @@ export default function Layout() {
             <Menu size={24} />
           </button>
           <div className="flex-1" />
+          <div className="flex items-center gap-2">
+            <Calendar size={14} className="text-slate-400 dark:text-slate-500" />
+            <select
+              value={state.analysisYear || new Date().getFullYear()}
+              onChange={e => dispatch({ type: 'SET_ANALYSIS_YEAR', year: parseInt(e.target.value) })}
+              className="text-xs font-medium border border-slate-200 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500"
+            >
+              {Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - 5 + i).map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
           <span className="text-xs text-slate-400 dark:text-slate-500">
             Navarre, FL 32566
           </span>

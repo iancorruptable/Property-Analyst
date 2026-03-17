@@ -133,6 +133,74 @@ export function calcDepreciation(costBasis, landValue) {
   return { annual, monthly: annual / 12, buildingValue: building };
 }
 
+// Multi-year cash flow projection
+export function calcMultiYearCashFlow(state, years = 10) {
+  const rent = parseCurrency(state.rental?.targetRent);
+  const vacancyRate = parseFloat(state.rental?.vacancyRatePercent || 8) / 100;
+  const mgmtRate = parseFloat(state.rental?.managementFeePercent || 10) / 100;
+  const maintRate = parseFloat(state.rental?.maintenanceReservePercent || 8) / 100;
+  const capexRate = parseFloat(state.rental?.capexReservePercent || 5) / 100;
+  const rentEscalation = parseFloat(state.rental?.rentEscalationPercent || 3) / 100;
+  const expenseGrowth = parseFloat(state.rental?.expenseGrowthPercent || 2) / 100;
+
+  const monthlyTaxes = parseCurrency(state.taxesInsurance?.annualPropertyTax) / 12;
+  const monthlyInsurance = parseCurrency(state.taxesInsurance?.insurancePremium) / 12;
+  const monthlyFlood = parseCurrency(state.taxesInsurance?.floodPremium) / 12;
+  const hoa = parseCurrency(state.property?.hoaDues);
+  const debtService = parseCurrency(state.mortgage?.monthlyPI);
+
+  const purchasePrice = parseCurrency(state.property?.purchasePrice);
+  const landValue = parseCurrency(state.taxesInsurance?.countyLandValue);
+  const dep = purchasePrice > 0 ? calcDepreciation(purchasePrice, landValue) : null;
+  const monthlyDepreciation = dep?.monthly || 0;
+  const marginalTaxRate = parseFloat(state.rental?.marginalTaxRate || 22) / 100;
+
+  const projections = [];
+  for (let y = 0; y < years; y++) {
+    const yearRent = rent * Math.pow(1 + rentEscalation, y);
+    const expenseFactor = Math.pow(1 + expenseGrowth, y);
+
+    const grossRent = yearRent * 12;
+    const vacancyLoss = grossRent * vacancyRate;
+    const effectiveGross = grossRent - vacancyLoss;
+    const mgmtFee = effectiveGross * mgmtRate;
+    const maintenance = grossRent * maintRate;
+    const capex = grossRent * capexRate;
+    const taxes = monthlyTaxes * 12 * expenseFactor;
+    const insurance = (monthlyInsurance + monthlyFlood) * 12 * expenseFactor;
+    const hoaAnnual = hoa * 12 * expenseFactor;
+
+    const totalOpEx = mgmtFee + maintenance + capex + taxes + insurance + hoaAnnual;
+    const noi = effectiveGross - totalOpEx;
+    const annualDebt = debtService * 12;
+    const preTaxCashFlow = noi - annualDebt;
+
+    // Tax impact
+    const annualDepreciation = monthlyDepreciation * 12;
+    // Mortgage interest estimate declines over time (rough linear approximation)
+    const interestRatio = Math.max(0.3, 0.7 - y * 0.015);
+    const mortgageInterest = annualDebt * (parseFloat(state.mortgage?.interestRate || 0) / 100) * interestRatio;
+    const taxableIncome = effectiveGross - totalOpEx - mortgageInterest - annualDepreciation;
+    const taxImpact = taxableIncome * marginalTaxRate;
+    const afterTaxCashFlow = preTaxCashFlow - taxImpact;
+
+    projections.push({
+      year: y + 1,
+      monthlyRent: yearRent,
+      grossRent,
+      noi,
+      preTaxCashFlow,
+      afterTaxCashFlow,
+      annualDepreciation,
+      taxableIncome,
+      taxImpact,
+      cumulativePreTax: projections.reduce((s, p) => s + p.preTaxCashFlow, 0) + preTaxCashFlow,
+      cumulativeAfterTax: projections.reduce((s, p) => s + p.afterTaxCashFlow, 0) + afterTaxCashFlow,
+    });
+  }
+  return projections;
+}
+
 // Status color helper
 export function getStatusColor(status) {
   switch (status) {

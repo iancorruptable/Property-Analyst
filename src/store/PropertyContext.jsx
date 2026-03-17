@@ -89,6 +89,8 @@ const defaultState = {
     furnished: false,
     lawnPestVendor: '',
     reserveCash: '',
+    rentEscalationPercent: '3',
+    expenseGrowthPercent: '2',
   },
 
   // Module E - VA / Future Purchase
@@ -202,6 +204,9 @@ const defaultState = {
     },
   },
 
+  // Global filters
+  analysisYear: new Date().getFullYear(),
+
   // Metadata
   lastUpdated: new Date().toISOString(),
 };
@@ -259,6 +264,8 @@ function reducer(state, action) {
         rentReadiness: { ...state.rentReadiness, [action.key]: action.value },
         lastUpdated: new Date().toISOString(),
       };
+    case 'SET_ANALYSIS_YEAR':
+      return { ...state, analysisYear: action.year };
     case 'IMPORT_DATA':
       return {
         ...defaultState,

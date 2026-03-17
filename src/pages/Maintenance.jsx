@@ -44,6 +44,8 @@ const hurricaneChecklist = [
 export default function Maintenance() {
   const { state, dispatch } = useProperty();
   const log = state.maintenanceLog || [];
+  const analysisYear = state.analysisYear || new Date().getFullYear();
+  const yearLog = log.filter(e => e.date && e.date.startsWith(String(analysisYear)));
   const [newEntry, setNewEntry] = useState({ date: '', description: '', cost: '', category: '', vendor: '', status: 'completed' });
 
   const addEntry = () => {
@@ -56,7 +58,7 @@ export default function Maintenance() {
     dispatch({ type: 'REMOVE_FROM_ARRAY', section: 'maintenanceLog', index });
   };
 
-  const totalSpent = log.reduce((sum, e) => sum + parseCurrency(e.cost), 0);
+  const totalSpent = yearLog.reduce((sum, e) => sum + parseCurrency(e.cost), 0);
   const categories = ['repair', 'preventive', 'emergency', 'improvement', 'inspection', 'hurricane-prep'];
 
   const toggleHurricane = (index) => {
@@ -72,14 +74,14 @@ export default function Maintenance() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Maintenance & CapEx</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 12 — Maintenance log, preventive schedule, and hurricane readiness</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Module 12 — Maintenance log, preventive schedule, and hurricane readiness &middot; Showing <span className="font-semibold text-slate-700 dark:text-slate-300">{analysisYear}</span></p>
       </div>
 
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Entries</p>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">{log.length}</p>
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Entries ({analysisYear})</p>
+          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">{yearLog.length}</p>
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Spent</p>
@@ -87,7 +89,7 @@ export default function Maintenance() {
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Open Items</p>
-          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">{log.filter(e => e.status === 'pending' || e.status === 'in-progress').length}</p>
+          <p className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">{yearLog.filter(e => e.status === 'pending' || e.status === 'in-progress').length}</p>
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Hurricane Prep</p>
@@ -113,8 +115,8 @@ export default function Maintenance() {
       </Card>
 
       {/* Maintenance Log */}
-      {log.length > 0 && (
-        <Card title="Maintenance Log">
+      {yearLog.length > 0 && (
+        <Card title={`Maintenance Log — ${analysisYear}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -129,8 +131,8 @@ export default function Maintenance() {
                 </tr>
               </thead>
               <tbody>
-                {[...log].reverse().map((entry, i) => {
-                  const realIndex = log.length - 1 - i;
+                {[...yearLog].reverse().map((entry, i) => {
+                  const realIndex = log.indexOf(yearLog[yearLog.length - 1 - i]);
                   return (
                     <tr key={entry.id || i} className="border-b border-slate-50 dark:border-slate-700/50">
                       <td className="py-2 text-slate-700 dark:text-slate-300">{entry.date}</td>
