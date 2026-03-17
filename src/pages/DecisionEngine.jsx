@@ -8,8 +8,11 @@ export default function DecisionEngine() {
 
   const purchasePrice = parseCurrency(state.property.purchasePrice);
   const balance = parseCurrency(state.mortgage.currentBalance);
-  const equity = purchasePrice && balance ? calcEquity(purchasePrice, balance) : 0;
-  const ltv = purchasePrice && balance ? calcLTV(balance, purchasePrice) : 0;
+  const estimates = state.valueEstimates || [];
+  const sortedEstimates = [...estimates].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const latestValue = sortedEstimates.length > 0 ? parseCurrency(sortedEstimates[sortedEstimates.length - 1].value) : purchasePrice;
+  const equity = latestValue && balance ? calcEquity(latestValue, balance) : 0;
+  const ltv = latestValue && balance ? calcLTV(balance, latestValue) : 0;
   const cf = calcCashFlow(state);
   const breakEven = calcBreakEvenRent(state);
   const targetRent = parseCurrency(state.rental?.targetRent);
@@ -43,7 +46,7 @@ export default function DecisionEngine() {
   const rec = recLabels[recommendation];
 
   // Selling scenario
-  const sellingCosts = purchasePrice * 0.08; // ~8% closing + agent
+  const sellingCosts = latestValue * 0.08; // ~8% closing + agent
   const netFromSale = equity - sellingCosts;
 
   return (

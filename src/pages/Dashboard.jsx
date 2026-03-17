@@ -22,8 +22,13 @@ export default function Dashboard() {
   const completeness = getCompleteness(state);
   const hasData = completeness.filled > 0;
 
-  const equity = calcEquity(state.property?.purchasePrice || 0, state.mortgage?.currentBalance || 0);
-  const ltv = calcLTV(state.mortgage?.currentBalance, state.property?.purchasePrice);
+  const purchasePrice = parseCurrency(state.property?.purchasePrice);
+  const balance = parseCurrency(state.mortgage?.currentBalance);
+  const estimates = state.valueEstimates || [];
+  const sortedEstimates = [...estimates].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const latestValue = sortedEstimates.length > 0 ? parseCurrency(sortedEstimates[sortedEstimates.length - 1].value) : purchasePrice;
+  const equity = calcEquity(latestValue || 0, balance || 0);
+  const ltv = calcLTV(balance, latestValue);
   const cashFlow = hasData ? calcCashFlow(state) : null;
   const breakEven = hasData ? calcBreakEvenRent(state) : 0;
 
@@ -92,6 +97,26 @@ export default function Dashboard() {
         </Link>
       )}
 
+      {/* Equity Banner */}
+      {hasData && balance > 0 && (
+        <div className={`rounded-xl border-2 p-5 flex items-center justify-between ${equity >= 0 ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-red-500 bg-red-50 dark:bg-red-900/20'}`}>
+          <div>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Total Equity</p>
+            <p className={`text-3xl font-bold ${equity >= 0 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+              {formatCurrency(equity)}
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {formatCurrency(latestValue)} value − {formatCurrency(balance)} owed • LTV: {formatPercent(ltv)}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-slate-400 dark:text-slate-500">
+              {sortedEstimates.length > 0 ? 'Based on latest estimate' : 'Based on purchase price'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Property Status */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <MetricCard
@@ -101,20 +126,20 @@ export default function Dashboard() {
         />
         <MetricCard
           label="Est. Value"
-          value={state.property?.purchasePrice ? formatCurrency(state.property.purchasePrice) : '—'}
-          sublabel={hasData ? 'Based on purchase price' : 'Missing'}
-          status={state.property?.purchasePrice ? 'green' : 'red'}
+          value={latestValue ? formatCurrency(latestValue) : '—'}
+          sublabel={sortedEstimates.length > 0 ? 'Latest estimate' : (hasData ? 'Purchase price' : 'Missing')}
+          status={latestValue ? 'green' : 'red'}
         />
         <MetricCard
           label="Loan Balance"
-          value={state.mortgage?.currentBalance ? formatCurrency(state.mortgage.currentBalance) : '—'}
+          value={balance ? formatCurrency(balance) : '—'}
           sublabel={state.mortgage?.interestRate ? `${state.mortgage.interestRate}% rate` : ''}
-          status={state.mortgage?.currentBalance ? 'green' : 'red'}
+          status={balance ? 'green' : 'red'}
         />
         <MetricCard
           label="Estimated Equity"
-          value={hasData && state.mortgage?.currentBalance ? formatCurrency(equity) : '—'}
-          sublabel={hasData && state.mortgage?.currentBalance ? `LTV: ${formatPercent(ltv)}` : ''}
+          value={hasData && balance ? formatCurrency(equity) : '—'}
+          sublabel={hasData && balance ? `LTV: ${formatPercent(ltv)}` : ''}
           status={equity > 0 ? 'green' : equity < 0 ? 'red' : 'gray'}
         />
       </div>
