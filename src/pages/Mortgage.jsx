@@ -5,7 +5,7 @@ import { formatCurrency, formatPercent, parseCurrency, calcEquity, calcLTV, calc
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 export default function Mortgage() {
-  const { state } = useProperty();
+  const { state, dispatch } = useProperty();
   const m = state.mortgage;
   const balance = parseCurrency(m.currentBalance);
   const origAmount = parseCurrency(m.originalLoanAmount);
@@ -22,6 +22,20 @@ export default function Mortgage() {
   const principalPaid = origAmount - balance;
 
   const ltvStatus = ltv === 0 ? 'gray' : ltv < 80 ? 'green' : ltv < 90 ? 'yellow' : 'red';
+
+  // Rate advantage calculations
+  const inflationRate = parseFloat(state.rental?.inflationRate || 3.2);
+  const currentMarketRate = parseFloat(state.rental?.currentMarketRate || 6.5);
+  const realCostOfDebt = rate - inflationRate; // negative = debt shrinks in real terms
+  const rateDelta = currentMarketRate - rate; // spread vs today's market
+  const monthlyAtMarketRate = origAmount && currentMarketRate ? calcMonthlyPI(origAmount, currentMarketRate, term) : 0;
+  const actualMonthly = parseCurrency(m.monthlyPI) || calcPI;
+  const monthlySavings = monthlyAtMarketRate - actualMonthly;
+  const annualSavings = monthlySavings * 12;
+  const remainingYears = term - (origAmount > 0 && balance > 0 ? Math.round(term * (1 - balance / origAmount) / (1 - Math.pow(1 + rate / 1200, -term * 12))) : 0);
+  const lifetimeSavings = annualSavings * Math.max(1, Math.min(remainingYears, term));
+  // How much the loan balance "shrinks" in real purchasing power each year
+  const annualInflationBenefit = balance * (inflationRate / 100);
 
   const pieData = latestValue && balance ? [
     { name: 'Equity', value: Math.max(0, equity), color: '#22c55e' },
@@ -141,6 +155,110 @@ export default function Mortgage() {
           </div>
         </Card>
       </div>
+
+      {/* Rate Advantage Analysis */}
+      {rate > 0 && balance > 0 && (
+        <Card title="Rate Advantage Analysis" status={realCostOfDebt < 0 ? 'green' : 'yellow'}>
+          <div className="space-y-4">
+            {/* Comparison inputs */}
+            <div className="flex flex-wrap items-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 dark:text-slate-400">Today's market rate</span>
+                <input
+                  type="text"
+                  value={state.rental?.currentMarketRate || ''}
+                  onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'currentMarketRate', value: e.target.value })}
+                  placeholder="6.5"
+                  className="w-16 px-2 py-1 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-slate-400 dark:text-slate-500">%</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 dark:text-slate-400">Inflation rate</span>
+                <input
+                  type="text"
+                  value={state.rental?.inflationRate || ''}
+                  onChange={e => dispatch({ type: 'SET_FIELD', section: 'rental', field: 'inflationRate', value: e.target.value })}
+                  placeholder="3.2"
+                  className="w-16 px-2 py-1 text-right text-sm font-bold border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-slate-400 dark:text-slate-500">%</span>
+              </div>
+            </div>
+
+            {/* The Big Number */}
+            <div className={`rounded-xl p-5 text-center ${realCostOfDebt < 0 ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700' : 'bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600'}`}>
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase mb-1">Real Cost of Your Debt</p>
+              <p className={`text-3xl font-black ${realCostOfDebt < 0 ? 'text-green-700 dark:text-green-300' : 'text-slate-900 dark:text-slate-100'}`}>
+                {realCostOfDebt > 0 ? '+' : ''}{realCostOfDebt.toFixed(2)}%
+              </p>
+              <p className="text-sm mt-1 text-slate-600 dark:text-slate-400">
+                {realCostOfDebt < 0
+                  ? `Your ${rate}% rate minus ${inflationRate}% inflation = your debt is shrinking in real terms`
+                  : `Your rate is above inflation — the loan costs real money`
+                }
+              </p>
+              {realCostOfDebt < 0 && (
+                <p className="text-xs text-green-700 dark:text-green-400 font-semibold mt-2">
+                  This is effectively free money. Every year, inflation erodes {formatCurrency(annualInflationBenefit)} of your loan's real value.
+                </p>
+              )}
+            </div>
+
+            {/* Detailed breakdown */}
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Your Rate vs. Market</p>
+                {[
+                  ['Your Rate', `${rate}%`],
+                  ['Today\'s Market Rate', `${currentMarketRate}%`],
+                  ['Rate Advantage', `${rateDelta.toFixed(2)}% lower`],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50 text-sm">
+                    <span className="text-slate-600 dark:text-slate-400">{label}</span>
+                    <span className="font-medium text-slate-900 dark:text-slate-100">{value}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Monthly Savings</p>
+                {[
+                  ['Your P&I', formatCurrency(actualMonthly)],
+                  [`P&I at ${currentMarketRate}%`, formatCurrency(monthlyAtMarketRate)],
+                  ['Monthly Savings', formatCurrency(monthlySavings)],
+                  ['Annual Savings', formatCurrency(annualSavings)],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50 text-sm">
+                    <span className="text-slate-600 dark:text-slate-400">{label}</span>
+                    <span className={`font-medium ${label.includes('Savings') ? 'text-green-600 dark:text-green-400' : 'text-slate-900 dark:text-slate-100'}`}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Inflation wealth transfer */}
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
+              <p className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">Why This Matters for Keep vs. Sell</p>
+              <ul className="text-xs text-blue-700 dark:text-blue-400 space-y-1.5">
+                <li>• <strong>Inflation erodes your loan:</strong> Your {formatCurrency(balance)} balance loses ~{formatCurrency(annualInflationBenefit)}/yr in real purchasing power</li>
+                <li>• <strong>Rate you can't replace:</strong> Selling this property means losing your {rate}% rate. A new loan today would cost {currentMarketRate}% — that's {formatCurrency(monthlySavings)}/mo more</li>
+                <li>• <strong>Leverage advantage:</strong> You're borrowing at {rate}% and inflation runs at {inflationRate}% — the spread pays you to hold debt</li>
+                {annualSavings > 0 && <li>• <strong>Opportunity cost of selling:</strong> Giving up ~{formatCurrency(annualSavings)}/yr in rate savings, or ~{formatCurrency(lifetimeSavings)} over the remaining loan life</li>}
+              </ul>
+            </div>
+
+            {/* Sell penalty estimate */}
+            {monthlySavings > 0 && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-4">
+                <p className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">Cost of Losing This Rate</p>
+                <p className="text-xs text-red-700 dark:text-red-400">
+                  If you sell and buy a similar property at today's {currentMarketRate}% rate, you'd pay <strong>{formatCurrency(monthlySavings)}/mo more</strong> — that's <strong>{formatCurrency(annualSavings)}/yr</strong> out of pocket. Over 10 years, that's roughly <strong>{formatCurrency(annualSavings * 10)}</strong> in extra interest.
+                </p>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

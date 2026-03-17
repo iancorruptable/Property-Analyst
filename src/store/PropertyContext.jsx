@@ -91,6 +91,8 @@ const defaultState = {
     reserveCash: '',
     rentEscalationPercent: '3',
     expenseGrowthPercent: '2',
+    currentMarketRate: '6.5',
+    inflationRate: '3.2',
   },
 
   // Module E - VA / Future Purchase

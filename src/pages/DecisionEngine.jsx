@@ -1,7 +1,7 @@
 import { useProperty } from '../store/PropertyContext';
 import Card from '../components/Card';
 import StatusBadge from '../components/StatusBadge';
-import { formatCurrency, formatPercent, parseCurrency, calcEquity, calcLTV, calcCashFlow, calcBreakEvenRent, calcVAEntitlement } from '../utils/calculations';
+import { formatCurrency, formatPercent, parseCurrency, calcEquity, calcLTV, calcCashFlow, calcBreakEvenRent, calcVAEntitlement, calcMonthlyPI } from '../utils/calculations';
 
 export default function DecisionEngine() {
   const { state } = useProperty();
@@ -22,11 +22,24 @@ export default function DecisionEngine() {
 
   const hasData = purchasePrice > 0 && balance > 0 && targetRent > 0;
 
+  // Rate advantage
+  const rate = parseFloat(state.mortgage.interestRate) || 0;
+  const inflationRate = parseFloat(state.rental?.inflationRate || 3.2);
+  const currentMarketRate = parseFloat(state.rental?.currentMarketRate || 6.5);
+  const realCostOfDebt = rate - inflationRate;
+  const rateDelta = currentMarketRate - rate;
+  const term = parseInt(state.mortgage.loanTerm) || 30;
+  const monthlyAtMarketRate = originalLoan && currentMarketRate ? calcMonthlyPI(originalLoan, currentMarketRate, term) : 0;
+  const actualMonthly = parseCurrency(state.mortgage.monthlyPI) || (originalLoan && rate ? calcMonthlyPI(originalLoan, rate, term) : 0);
+  const monthlySavings = monthlyAtMarketRate - actualMonthly;
+  const annualSavings = monthlySavings * 12;
+
   // Scoring
   const scores = {
     cashFlow: cf.cashFlow >= 200 ? 3 : cf.cashFlow >= 0 ? 2 : cf.cashFlow >= -200 ? 1 : 0,
     equity: equity >= 50000 ? 3 : equity >= 20000 ? 2 : equity > 0 ? 1 : 0,
     ltv: ltv < 80 ? 3 : ltv < 90 ? 2 : ltv < 95 ? 1 : 0,
+    rateAdvantage: realCostOfDebt < -1 ? 3 : realCostOfDebt < 0 ? 2 : rateDelta > 1 ? 1 : 0,
     reserves: reserveCash >= 10000 ? 3 : reserveCash >= 5000 ? 2 : reserveCash > 0 ? 1 : 0,
     breakEvenMargin: targetRent >= breakEven + 200 ? 3 : targetRent >= breakEven ? 2 : targetRent >= breakEven - 200 ? 1 : 0,
     vaEntitlement: va && va.zeroDownPower >= 400000 ? 3 : va && va.zeroDownPower >= 200000 ? 2 : va ? 1 : 0,
@@ -79,6 +92,7 @@ export default function DecisionEngine() {
             { label: 'Monthly Cash Flow', score: scores.cashFlow, value: hasData ? formatCurrency(cf.cashFlow) : '—', detail: cf.cashFlow >= 200 ? 'Strong positive' : cf.cashFlow >= 0 ? 'Break-even' : 'Negative' },
             { label: 'Equity Position', score: scores.equity, value: equity ? formatCurrency(equity) : '—', detail: equity >= 50000 ? 'Strong' : equity > 0 ? 'Building' : 'Underwater' },
             { label: 'LTV Ratio', score: scores.ltv, value: ltv ? formatPercent(ltv) : '—', detail: ltv < 80 ? 'Healthy' : 'High leverage' },
+            { label: 'Rate Advantage', score: scores.rateAdvantage, value: rate ? `${rate}% vs ${currentMarketRate}%` : '—', detail: realCostOfDebt < 0 ? `Below inflation — saving ${formatCurrency(annualSavings)}/yr` : rateDelta > 1 ? `${rateDelta.toFixed(1)}% below market` : 'At or above market' },
             { label: 'Reserve Fund', score: scores.reserves, value: reserveCash ? formatCurrency(reserveCash) : '—', detail: reserveCash >= 10000 ? 'Well-funded' : reserveCash > 0 ? 'Underfunded' : 'None' },
             { label: 'Break-Even Margin', score: scores.breakEvenMargin, value: hasData ? formatCurrency(targetRent - breakEven) : '—', detail: targetRent >= breakEven ? 'Above break-even' : 'Below break-even' },
             { label: 'VA Buying Power', score: scores.vaEntitlement, value: va ? formatCurrency(va.zeroDownPower) : '—', detail: va ? `${formatCurrency(va.zeroDownPower)} zero-down` : 'Unknown' },
@@ -106,10 +120,10 @@ export default function DecisionEngine() {
             {[
               ['Monthly Cash Flow', hasData ? formatCurrency(cf.cashFlow) : '—'],
               ['Annual Cash Flow', hasData ? formatCurrency(cf.cashFlow * 12) : '—'],
-              ['Equity Growth', 'Continues via appreciation + paydown'],
+              ['Rate Advantage', rate > 0 ? `${rate}% locked (saves ${formatCurrency(monthlySavings)}/mo)` : '—'],
+              ['Equity Growth', 'Appreciation + paydown + inflation erosion'],
               ['Tax Benefit', 'Depreciation deduction'],
               ['Risk', 'Vacancy, maintenance, tenant issues'],
-              ['VA Impact', 'Entitlement remains used'],
             ].map(([l, v]) => (
               <div key={l} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50">
                 <span className="text-slate-600 dark:text-slate-400">{l}</span>
@@ -126,9 +140,9 @@ export default function DecisionEngine() {
               ['Estimated Equity', equity ? formatCurrency(equity) : '—'],
               ['Selling Costs (~8%)', purchasePrice ? formatCurrency(sellingCosts) : '—'],
               ['Net Proceeds', netFromSale ? formatCurrency(netFromSale) : '—'],
+              ['Rate Loss', rate > 0 && monthlySavings > 0 ? `Lose ${rate}% — costs ${formatCurrency(annualSavings)}/yr more` : '—'],
               ['VA Entitlement', 'Restored after payoff'],
               ['Tax Impact', 'Capital gains if >$250K profit'],
-              ['Benefit', 'Cash in hand + full VA restoration'],
             ].map(([l, v]) => (
               <div key={l} className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-700/50">
                 <span className="text-slate-600 dark:text-slate-400">{l}</span>
