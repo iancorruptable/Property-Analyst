@@ -301,7 +301,7 @@ export default function DocumentsVault() {
                 const Icon = hasUploadedFile ? getFileIcon(doc.fileType) : FileText;
 
                 return (
-                  <div key={item.key} className="group flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                  <div key={item.key} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                     {/* Status icon */}
                     <button onClick={() => {
                       if (hasFile && !hasUploadedFile) {
@@ -328,27 +328,32 @@ export default function DocumentsVault() {
                       )}
                     </div>
 
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {hasUploadedFile && (
+                    {/* Always-visible action buttons */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {hasUploadedFile ? (
                         <>
-                          <button onClick={() => handleViewFile(item.key, doc.fileName)} className="p-1 text-slate-400 hover:text-blue-500" title="Preview">
-                            <Eye size={14} />
+                          <button onClick={() => handleViewFile(item.key, doc.fileName)} className="p-1.5 rounded-md text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30" title="Preview">
+                            <Eye size={16} />
                           </button>
-                          <button onClick={() => handleDownloadFile(item.key, doc.fileName)} className="p-1 text-slate-400 hover:text-green-500" title="Download">
-                            <Download size={14} />
+                          <button onClick={() => handleDownloadFile(item.key, doc.fileName)} className="p-1.5 rounded-md text-slate-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30" title="Download">
+                            <Download size={16} />
+                          </button>
+                          <button onClick={() => {
+                            setUploadingKey(item.key);
+                            docUploadRef.current?.click();
+                          }} className="p-1.5 rounded-md text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30" title="Replace file">
+                            <Paperclip size={16} />
+                          </button>
+                          <button onClick={() => handleRemoveFile(item.key)} className="p-1.5 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30" title="Remove">
+                            <Trash2 size={16} />
                           </button>
                         </>
-                      )}
-                      <button onClick={() => {
-                        setUploadingKey(item.key);
-                        docUploadRef.current?.click();
-                      }} className="p-1 text-slate-400 hover:text-blue-500" title={hasUploadedFile ? 'Replace file' : 'Upload file'}>
-                        <Paperclip size={14} />
-                      </button>
-                      {hasFile && (
-                        <button onClick={() => handleRemoveFile(item.key)} className="p-1 text-slate-400 hover:text-red-500" title="Remove">
-                          <Trash2 size={14} />
+                      ) : (
+                        <button onClick={() => {
+                          setUploadingKey(item.key);
+                          docUploadRef.current?.click();
+                        }} className="p-1.5 rounded-md text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30" title="Upload file">
+                          <Paperclip size={16} />
                         </button>
                       )}
                     </div>
