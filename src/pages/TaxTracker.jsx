@@ -83,6 +83,45 @@ export default function TaxTracker() {
         <strong>Disclaimer:</strong> This is for tracking and estimation only. Always consult your CPA for actual tax filing.
       </div>
 
+      {/* Military Tax Benefits */}
+      {state.vaBenefit?.activeDutyStatus === 'yes' && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-xl p-5">
+          <h2 className="text-sm font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wide mb-3">Active Duty Military Tax Benefits — Florida</h2>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+              <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase mb-1">Homestead + Save Our Homes (3% Cap)</p>
+              <p className="text-sm text-slate-700 dark:text-slate-300">
+                As active duty, you <strong>keep your homestead exemption</strong> and the 3% annual assessed value increase cap even after PCS. Do NOT file for removal with the county.
+              </p>
+              <div className="mt-2 bg-green-50 dark:bg-green-900/30 rounded p-2">
+                <p className="text-xs text-green-800 dark:text-green-300">
+                  <strong>Impact:</strong> Your property taxes stay capped at 3% annual increases instead of jumping to market value reassessment. This could save you thousands per year if property values rise.
+                </p>
+              </div>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2">FL Statute §196.173 — Deployed military homestead exemption</p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+              <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase mb-1">Capital Gains Exclusion — 15-Year Window</p>
+              <p className="text-sm text-slate-700 dark:text-slate-300">
+                Standard rule: lived in home 2 of last 5 years to exclude up to $250K ($500K married) in gains. As military, you get a <strong>10-year suspension</strong>, extending the window to <strong>15 years</strong>.
+              </p>
+              {purchasePrice > 0 && (
+                <div className="mt-2 bg-green-50 dark:bg-green-900/30 rounded p-2">
+                  <p className="text-xs text-green-800 dark:text-green-300">
+                    <strong>Your timeline:</strong> Purchased {state.property?.purchaseDate ? `on ${state.property.purchaseDate}` : '(date not entered)'}. You have until{' '}
+                    {state.property?.purchaseDate
+                      ? new Date(new Date(state.property.purchaseDate).setFullYear(new Date(state.property.purchaseDate).getFullYear() + parseInt(state.vaBenefit?.capitalGainsExclusionYears || 15))).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                      : '(enter purchase date)'}{' '}
+                    to sell and still qualify for the exclusion.
+                  </p>
+                </div>
+              )}
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2">IRC §121(d)(9) — Military Families Tax Relief Act</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Depreciation */}
         <Card title="Residential Depreciation (27.5 years)" status={dep ? 'green' : 'red'}>

@@ -7,7 +7,7 @@ const thirtyDayChecklist = [
   { key: 'pm_selected', label: 'Property manager selected and under contract' },
   { key: 'pm_keys', label: 'Spare keys / access codes provided to PM' },
   { key: 'insurance_converted', label: 'Insurance converted to landlord policy (DP-3)' },
-  { key: 'homestead_filed', label: 'Homestead exemption removal filed with county' },
+  { key: 'homestead_filed', label: 'Homestead exemption status verified — active duty retains FL homestead + 3% SOH cap (do NOT file removal)' },
   { key: 'cpa_consulted', label: 'CPA consulted on rental conversion and depreciation' },
   { key: 'lease_ready', label: 'Lease template ready (FL-compliant)' },
   { key: 'bank_account', label: 'Rental bank account set up' },

@@ -58,6 +58,8 @@ const defaultState = {
   taxesInsurance: {
     annualPropertyTax: '',
     homesteadExemption: '',
+    homesteadSOHCap: true, // FL Save Our Homes 3% cap — military can keep when deployed/PCS
+    militaryHomesteadRetained: '', // yes/no — active duty can retain homestead + SOH cap per FL statute
     countyAssessedValue: '',
     countyLandValue: '',
     insurancePremium: '',
@@ -110,6 +112,8 @@ const defaultState = {
     dtiConcerns: '',
     grossMonthlyIncome: '',
     buyBeforeOrAfterPCS: '',
+    activeDutyStatus: 'yes', // active duty military — affects capital gains + homestead
+    capitalGainsExclusionYears: '15', // Military: up to 15 yrs (10-yr suspension + 5-yr lookback) per IRC §121(d)(9)
   },
 
   // Module F - Operations

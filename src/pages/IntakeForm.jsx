@@ -92,6 +92,7 @@ export default function IntakeForm() {
           <div className="grid sm:grid-cols-2 gap-4">
             <FormField label="Annual Property Tax" prefix="$" value={state.taxesInsurance.annualPropertyTax} onChange={v => update('taxesInsurance', 'annualPropertyTax', v)} required />
             <FormField label="Homestead Exemption?" type="select" value={state.taxesInsurance.homesteadExemption} onChange={v => update('taxesInsurance', 'homesteadExemption', v)} options={['yes', 'no', 'unknown']} />
+            <FormField label="Military Homestead Retained?" type="select" value={state.taxesInsurance.militaryHomesteadRetained} onChange={v => update('taxesInsurance', 'militaryHomesteadRetained', v)} options={[{ value: 'yes', label: 'Yes — keeping SOH cap' }, { value: 'no', label: 'No — removing homestead' }, { value: 'unknown', label: 'Unknown' }]} helpText="FL active duty: you can keep homestead + 3% SOH cap even after PCS" />
             <FormField label="County Assessed Value" prefix="$" value={state.taxesInsurance.countyAssessedValue} onChange={v => update('taxesInsurance', 'countyAssessedValue', v)} />
             <FormField label="County Land Value" prefix="$" value={state.taxesInsurance.countyLandValue} onChange={v => update('taxesInsurance', 'countyLandValue', v)} helpText="From property appraiser — needed for depreciation" />
             <FormField label="Insurance Annual Premium" prefix="$" value={state.taxesInsurance.insurancePremium} onChange={v => update('taxesInsurance', 'insurancePremium', v)} required />
@@ -176,6 +177,8 @@ export default function IntakeForm() {
             <FormField label="DTI Concerns?" type="textarea" value={state.vaBenefit.dtiConcerns} onChange={v => update('vaBenefit', 'dtiConcerns', v)} />
             <FormField label="Gross Monthly Income" prefix="$" value={state.vaBenefit.grossMonthlyIncome} onChange={v => update('vaBenefit', 'grossMonthlyIncome', v)} />
             <FormField label="Buy Before or After PCS?" type="select" value={state.vaBenefit.buyBeforeOrAfterPCS} onChange={v => update('vaBenefit', 'buyBeforeOrAfterPCS', v)} options={['before', 'after', 'undecided']} />
+            <FormField label="Active Duty Status" type="select" value={state.vaBenefit.activeDutyStatus} onChange={v => update('vaBenefit', 'activeDutyStatus', v)} options={[{ value: 'yes', label: 'Active Duty' }, { value: 'reserve', label: 'Reserve/Guard' }, { value: 'veteran', label: 'Veteran (separated)' }]} helpText="Affects FL homestead retention & capital gains exclusion window" />
+            <FormField label="Capital Gains Exclusion Window" suffix="yrs" value={state.vaBenefit.capitalGainsExclusionYears} onChange={v => update('vaBenefit', 'capitalGainsExclusionYears', v)} helpText="Military: 15 yrs (10-yr suspension + 5-yr lookback) per IRC §121(d)(9)" />
           </div>
         </Card>
       )}
