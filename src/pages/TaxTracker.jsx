@@ -138,14 +138,14 @@ export default function TaxTracker() {
       <Card title="Expense Tracker">
         <div className="space-y-4">
           {/* Mode tabs */}
-          <div className="flex gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
-            <button onClick={() => { setBatchMode(false); setRecurringMode(false); }} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors ${!batchMode && !recurringMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+          <div className="flex flex-wrap gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
+            <button onClick={() => { setBatchMode(false); setRecurringMode(false); }} className={`text-xs font-medium px-3 py-1.5 min-h-[44px] rounded-md transition-colors ${!batchMode && !recurringMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
               Single Entry
             </button>
-            <button onClick={() => { setBatchMode(true); setRecurringMode(false); }} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${batchMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+            <button onClick={() => { setBatchMode(true); setRecurringMode(false); }} className={`text-xs font-medium px-3 py-1.5 min-h-[44px] rounded-md transition-colors flex items-center gap-1 ${batchMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
               <Copy size={12} /> Batch (same date)
             </button>
-            <button onClick={() => { setRecurringMode(true); setBatchMode(false); }} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${recurringMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
+            <button onClick={() => { setRecurringMode(true); setBatchMode(false); }} className={`text-xs font-medium px-3 py-1.5 min-h-[44px] rounded-md transition-colors flex items-center gap-1 ${recurringMode ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'}`}>
               <Calendar size={12} /> Recurring
             </button>
           </div>
@@ -159,7 +159,7 @@ export default function TaxTracker() {
                 <FormField label="Amount" prefix="$" value={newExpense.amount} onChange={v => setNewExpense(p => ({ ...p, amount: v }))} />
                 <FormField label="Category" type="select" value={newExpense.category} onChange={v => setNewExpense(p => ({ ...p, category: v }))} options={categories} />
               </div>
-              <button onClick={addExpense} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+              <button onClick={addExpense} className="flex items-center gap-2 px-4 py-2 min-h-[44px] bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
                 <Plus size={16} /> Add Expense
               </button>
             </>
@@ -168,7 +168,7 @@ export default function TaxTracker() {
           {/* Batch mode - one date, many expenses */}
           {batchMode && (
             <>
-              <div className="w-48">
+              <div className="w-full sm:w-48">
                 <FormField label="Date for all entries" type="date" value={batchDate} onChange={setBatchDate} />
               </div>
               <div className="space-y-2">
@@ -186,10 +186,10 @@ export default function TaxTracker() {
                 ))}
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setBatchRows(prev => [...prev, { description: '', amount: '', category: '' }])} className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
+                <button onClick={() => setBatchRows(prev => [...prev, { description: '', amount: '', category: '' }])} className="flex items-center gap-1 px-3 py-1.5 min-h-[44px] text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
                   <Plus size={12} /> Add Row
                 </button>
-                <button onClick={addBatchExpenses} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                <button onClick={addBatchExpenses} className="flex items-center gap-2 px-4 py-2 min-h-[44px] bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
                   <Plus size={16} /> Add All ({batchRows.filter(r => r.amount).length})
                 </button>
               </div>
@@ -211,7 +211,7 @@ export default function TaxTracker() {
                 </div>
                 <FormField label="Year" value={recurringTemplate.year} onChange={v => setRecurringTemplate(p => ({ ...p, year: v }))} />
               </div>
-              <button onClick={addRecurringExpenses} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+              <button onClick={addRecurringExpenses} className="flex items-center gap-2 px-4 py-2 min-h-[44px] bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
                 <Calendar size={16} /> Generate Entries
               </button>
             </>

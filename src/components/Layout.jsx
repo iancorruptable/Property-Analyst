@@ -80,7 +80,7 @@ function Sidebar({ open, onClose, onExport, onImport, fileInputRef }) {
               <h1 className="text-lg font-bold text-white">Property Analyst</h1>
               <p className="text-xs text-slate-400 mt-0.5">9577 Naples Lane</p>
             </div>
-            <button onClick={onClose} className="lg:hidden text-slate-400 hover:text-white">
+            <button onClick={onClose} className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-white">
               <X size={20} />
             </button>
           </div>
@@ -91,7 +91,7 @@ function Sidebar({ open, onClose, onExport, onImport, fileInputRef }) {
             <div key={group.label} className="mb-1">
               <button
                 onClick={() => toggleGroup(group.label)}
-                className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-200"
+                className="w-full flex items-center justify-between px-3 py-2 min-h-[44px] text-xs font-semibold text-slate-400 uppercase tracking-wider hover:text-slate-200"
               >
                 {group.label}
                 {collapsed[group.label] ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
@@ -104,7 +104,7 @@ function Sidebar({ open, onClose, onExport, onImport, fileInputRef }) {
                       to={item.path}
                       onClick={onClose}
                       className={({ isActive }) =>
-                        `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                        `flex items-center gap-3 px-3 py-2 min-h-[44px] rounded-lg text-sm transition-colors ${
                           isActive
                             ? 'bg-blue-600 text-white font-medium'
                             : 'text-slate-300 hover:bg-slate-800 hover:text-white'
@@ -123,10 +123,10 @@ function Sidebar({ open, onClose, onExport, onImport, fileInputRef }) {
         </nav>
 
         <div className="p-3 border-t border-slate-700 space-y-1">
-          <button onClick={onExport} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <button onClick={onExport} className="w-full flex items-center gap-3 px-3 py-2 min-h-[44px] rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
             <Download size={18} /> Export Data
           </button>
-          <button onClick={() => fileInputRef.current?.click()} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <button onClick={() => fileInputRef.current?.click()} className="w-full flex items-center gap-3 px-3 py-2 min-h-[44px] rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
             <Upload size={18} /> Import Data
           </button>
           <input ref={fileInputRef} type="file" accept=".json" onChange={onImport} className="hidden" />
@@ -177,7 +177,7 @@ export default function Layout() {
         <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center gap-4 lg:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           >
             <Menu size={24} />
           </button>

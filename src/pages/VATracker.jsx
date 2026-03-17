@@ -49,7 +49,27 @@ export default function VATracker() {
       <Card title="Entitlement Calculation" status={va ? 'green' : 'red'}>
         {va ? (
           <div className="space-y-3">
-            <div className="overflow-x-auto">
+            {/* Mobile cards */}
+            <div className="block sm:hidden space-y-3">
+              {[
+                { step: 'A. Original VA Loan', formula: 'Input', value: formatCurrency(originalLoan) },
+                { step: 'B. Entitlement Charged', formula: '25% x A', value: formatCurrency(va.entitlementCharged) },
+                { step: 'C. County Loan Limit (2026)', formula: 'Standard', value: formatCurrency(countyLimit) },
+                { step: 'D. Max Guaranty', formula: '25% x C', value: formatCurrency(va.maxGuaranty) },
+                { step: 'E. Remaining Entitlement', formula: 'D - B', value: formatCurrency(va.remaining), highlight: 'blue' },
+                { step: 'F. Zero-Down Buying Power', formula: 'E x 4', value: formatCurrency(va.zeroDownPower), highlight: 'green' },
+              ].map(row => (
+                <div key={row.step} className={`rounded-lg p-3 space-y-1 ${row.highlight === 'blue' ? 'bg-blue-50 dark:bg-blue-900/30' : row.highlight === 'green' ? 'bg-green-50 dark:bg-green-900/30' : 'bg-slate-50 dark:bg-slate-700/50'}`}>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm font-medium ${row.highlight === 'blue' ? 'text-blue-800 dark:text-blue-300' : row.highlight === 'green' ? 'text-green-800 dark:text-green-300' : 'text-slate-900 dark:text-slate-100'}`}>{row.step}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">{row.formula}</span>
+                  </div>
+                  <p className={`text-lg font-bold ${row.highlight === 'blue' ? 'text-blue-800 dark:text-blue-300' : row.highlight === 'green' ? 'text-green-800 dark:text-green-300' : 'text-slate-900 dark:text-slate-100'}`}>{row.value}</p>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-slate-700">

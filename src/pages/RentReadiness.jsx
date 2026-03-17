@@ -102,7 +102,7 @@ export default function RentReadiness() {
                   <button
                     key={item.key}
                     onClick={() => toggle(item.key)}
-                    className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-left min-h-[44px]"
                   >
                     {isDone ? (
                       <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" />

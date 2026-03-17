@@ -50,7 +50,7 @@ export default function Mortgage() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Loan Balance', value: balance ? formatCurrency(balance) : '—' },
           { label: 'Interest Rate', value: rate ? formatPercent(rate) : '—' },
