@@ -68,8 +68,8 @@ export default function CashFlow() {
     { name: 'Insurance', value: cf.insurance + cf.flood, color: '#f59e0b' },
     { name: 'HOA', value: cf.hoa, color: '#10b981' },
     { name: 'Mgmt', value: cf.mgmtFee, color: '#ef4444' },
-    { name: 'Maint', value: cf.maintenance, color: '#6366f1' },
-    { name: 'CapEx', value: cf.capex, color: '#ec4899' },
+    { name: 'Maint*', value: cf.maintenance, color: '#6366f1' },
+    { name: 'CapEx*', value: cf.capex, color: '#ec4899' },
   ].filter(d => d.value > 0) : [];
 
   return (
@@ -142,12 +142,14 @@ export default function CashFlow() {
         {hasData && reserveCash > 0 && (
           <div className="mt-4 grid sm:grid-cols-3 gap-3">
             <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Monthly Maint. Set-Aside</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(cf.maintenance)}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Maint. Budget Set-Aside</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(cf.maintenance)}/mo</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500">{formatCurrency(cf.maintenance * 12)}/yr target</p>
             </div>
             <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-slate-500 dark:text-slate-400">Monthly CapEx Set-Aside</p>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(cf.capex)}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">CapEx Budget Set-Aside</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(cf.capex)}/mo</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500">{formatCurrency(cf.capex * 12)}/yr target</p>
             </div>
             <div className={`rounded-lg p-3 text-center ${monthsOfCoverage >= 12 ? 'bg-green-50 dark:bg-green-900/30' : monthsOfCoverage >= 6 ? 'bg-yellow-50 dark:bg-yellow-900/30' : 'bg-red-50 dark:bg-red-900/30'}`}>
               <p className="text-xs text-slate-500 dark:text-slate-400">Reserves Coverage</p>
@@ -172,9 +174,9 @@ export default function CashFlow() {
               <span className="text-green-800 dark:text-green-300">Gross Rent</span>
               <span className="text-green-800 dark:text-green-300">{hasData ? formatCurrency(cf.grossRent) : '—'}</span>
             </div>
-            <div className="flex justify-between py-1 px-2 text-sm text-red-600 dark:text-red-400">
-              <span>− Vacancy ({state.rental?.vacancyRatePercent || 8}%)</span>
-              <span>({formatCurrency(cf.vacancyLoss)})</span>
+            <div className="flex justify-between py-1 px-2 text-sm text-amber-600 dark:text-amber-400">
+              <span>− Vacancy Allowance ({state.rental?.vacancyRatePercent || 8}%)</span>
+              <span>({formatCurrency(cf.vacancyLoss)}) <span className="text-[10px] text-slate-400 dark:text-slate-500">budget, not guaranteed</span></span>
             </div>
             <div className="flex justify-between py-1.5 px-2 bg-blue-50 dark:bg-blue-900/30 rounded text-sm font-semibold">
               <span className="text-blue-800 dark:text-blue-300">Effective Gross Income</span>
@@ -183,8 +185,6 @@ export default function CashFlow() {
             <div className="border-t border-slate-100 dark:border-slate-700 mt-2 pt-2" />
             {[
               { label: `Management Fee (${state.rental?.managementFeePercent || 10}%)`, value: cf.mgmtFee },
-              { label: `Maintenance Reserve (${state.rental?.maintenanceReservePercent || 8}%)`, value: cf.maintenance },
-              { label: `CapEx Reserve (${state.rental?.capexReservePercent || 5}%)`, value: cf.capex },
               { label: 'Property Taxes', value: cf.taxes },
               { label: 'Insurance', value: cf.insurance },
               { label: 'Flood Insurance', value: cf.flood },
@@ -195,6 +195,25 @@ export default function CashFlow() {
                 <span className="text-slate-700 dark:text-slate-300">({formatCurrency(item.value)})</span>
               </div>
             ))}
+            {/* Reserve allocations — separated to clarify these are budget set-asides, not actual monthly bills */}
+            <div className="border-t border-dashed border-slate-200 dark:border-slate-600 mt-2 pt-2">
+              <p className="text-[10px] uppercase tracking-wide font-semibold text-amber-600 dark:text-amber-400 px-2 mb-1">Annualized Reserve Allocations</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 px-2 mb-2">
+                These are not actual monthly bills — they represent money you should budget over time for irregular, unpredictable costs (e.g. a full vacancy month, a new HVAC, roof repairs). Actual timing and amounts will vary.
+              </p>
+              {[
+                { label: `Vacancy Allowance (${state.rental?.vacancyRatePercent || 8}%)`, value: cf.vacancyLoss, annual: cf.vacancyLoss * 12, note: `≈ ${formatCurrency(cf.vacancyLoss * 12)}/yr` },
+                { label: `Maintenance Reserve (${state.rental?.maintenanceReservePercent || 8}%)`, value: cf.maintenance, annual: cf.maintenance * 12, note: `≈ ${formatCurrency(cf.maintenance * 12)}/yr` },
+                { label: `CapEx Reserve (${state.rental?.capexReservePercent || 5}%)`, value: cf.capex, annual: cf.capex * 12, note: `≈ ${formatCurrency(cf.capex * 12)}/yr` },
+              ].filter(i => i.value > 0).map(item => (
+                <div key={item.label} className="flex justify-between py-1 px-2 text-sm">
+                  <span className="text-slate-600 dark:text-slate-400">− {item.label}</span>
+                  <span className="text-slate-700 dark:text-slate-300">
+                    ({formatCurrency(item.value)}<span className="text-[10px] text-slate-400 dark:text-slate-500 ml-1">{item.note}</span>)
+                  </span>
+                </div>
+              ))}
+            </div>
             <div className="flex justify-between py-1.5 px-2 bg-purple-50 dark:bg-purple-900/30 rounded text-sm font-semibold mt-1">
               <span className="text-purple-800 dark:text-purple-300">NOI</span>
               <span className="text-purple-800 dark:text-purple-300">{hasData ? formatCurrency(cf.noi) : '—'}</span>
@@ -252,19 +271,22 @@ export default function CashFlow() {
         {/* Expense Chart */}
         <Card title="Monthly Expense Distribution">
           {hasData && expenseChart.length > 0 ? (
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={expenseChart} layout="vertical" margin={{ left: 60 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-slate-200, #e2e8f0)" />
-                <XAxis type="number" tickFormatter={v => `$${v.toLocaleString()}`} tick={{ fill: 'currentColor' }} />
-                <YAxis type="category" dataKey="name" width={50} tick={{ fill: 'currentColor' }} />
-                <Tooltip formatter={v => formatCurrency(v)} contentStyle={{ backgroundColor: 'var(--color-slate-800, #1e293b)', border: '1px solid var(--color-slate-600, #475569)', borderRadius: '8px', color: '#e2e8f0' }} />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {expenseChart.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={expenseChart} layout="vertical" margin={{ left: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-slate-200, #e2e8f0)" />
+                  <XAxis type="number" tickFormatter={v => `$${v.toLocaleString()}`} tick={{ fill: 'currentColor' }} />
+                  <YAxis type="category" dataKey="name" width={50} tick={{ fill: 'currentColor' }} />
+                  <Tooltip formatter={v => formatCurrency(v)} contentStyle={{ backgroundColor: 'var(--color-slate-800, #1e293b)', border: '1px solid var(--color-slate-600, #475569)', borderRadius: '8px', color: '#e2e8f0' }} />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                    {expenseChart.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2">* Budget reserves — not recurring monthly bills. Actual costs are irregular and unpredictable.</p>
+            </>
           ) : (
             <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-8">Enter financial data to see chart</p>
           )}

@@ -201,15 +201,18 @@ export default function Dashboard() {
               <Row label="Flood Insurance" value={formatCurrency(cashFlow?.flood)} />
               <Row label="HOA" value={formatCurrency(cashFlow?.hoa)} />
               <Row label="Property Mgmt" value={formatCurrency(cashFlow?.mgmtFee)} sub={`${state.rental?.managementFeePercent}%`} />
-              <Row label="Maintenance Reserve" value={formatCurrency(cashFlow?.maintenance)} sub={`${state.rental?.maintenanceReservePercent}%`} />
-              <Row label="CapEx Reserve" value={formatCurrency(cashFlow?.capex)} sub={`${state.rental?.capexReservePercent}%`} />
+              <div className="border-t border-dashed border-slate-200 dark:border-slate-700 pt-2 mt-2">
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-wide mb-1">Budget Reserves (not actual monthly bills)</p>
+                <Row label="Maintenance Reserve" value={formatCurrency(cashFlow?.maintenance)} sub={`${state.rental?.maintenanceReservePercent}% · ${formatCurrency((cashFlow?.maintenance || 0) * 12)}/yr`} />
+                <Row label="CapEx Reserve" value={formatCurrency(cashFlow?.capex)} sub={`${state.rental?.capexReservePercent}% · ${formatCurrency((cashFlow?.capex || 0) * 12)}/yr`} />
+              </div>
               <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
                 <Row label="Total Monthly Cost" value={formatCurrency((cashFlow?.totalOpEx || 0) + (cashFlow?.debtService || 0))} bold />
               </div>
             </div>
             <div className="space-y-2">
               <Row label="Gross Rent" value={formatCurrency(cashFlow?.grossRent)} />
-              <Row label="Vacancy Loss" value={`(${formatCurrency(cashFlow?.vacancyLoss)})`} sub={`${state.rental?.vacancyRatePercent}%`} />
+              <Row label="Vacancy Allowance" value={`(${formatCurrency(cashFlow?.vacancyLoss)})`} sub={`${state.rental?.vacancyRatePercent}% · budget estimate`} />
               <Row label="Effective Gross Income" value={formatCurrency(cashFlow?.effectiveGross)} />
               <Row label="Total Operating Expenses" value={`(${formatCurrency(cashFlow?.totalOpEx)})`} />
               <Row label="Net Operating Income" value={formatCurrency(cashFlow?.noi)} />

@@ -140,9 +140,9 @@ export default function IntakeForm() {
             <FormField label="Rental Comps Reviewed?" type="checkbox" value={state.rental.rentalCompsReviewed} onChange={v => update('rental', 'rentalCompsReviewed', v)} />
             <FormField label="Management Fee %" suffix="%" value={state.rental.managementFeePercent} onChange={v => update('rental', 'managementFeePercent', v)} helpText="Typical: 8–10%" />
             <FormField label="Leasing Fee %" suffix="%" value={state.rental.leasingFeePercent} onChange={v => update('rental', 'leasingFeePercent', v)} helpText="% of first month rent. Typical: 50–100%" />
-            <FormField label="Vacancy Rate %" suffix="%" value={state.rental.vacancyRatePercent} onChange={v => update('rental', 'vacancyRatePercent', v)} helpText="Conservative: 8% (~1 month/yr)" />
-            <FormField label="Maintenance Reserve %" suffix="%" value={state.rental.maintenanceReservePercent} onChange={v => update('rental', 'maintenanceReservePercent', v)} helpText="Typical: 5–10%" />
-            <FormField label="CapEx Reserve %" suffix="%" value={state.rental.capexReservePercent} onChange={v => update('rental', 'capexReservePercent', v)} helpText="Typical: 5%" />
+            <FormField label="Vacancy Allowance %" suffix="%" value={state.rental.vacancyRatePercent} onChange={v => update('rental', 'vacancyRatePercent', v)} helpText="Annualized budget estimate. 8% ≈ 1 month/yr, but actual vacancy is unpredictable" />
+            <FormField label="Maintenance Reserve %" suffix="%" value={state.rental.maintenanceReservePercent} onChange={v => update('rental', 'maintenanceReservePercent', v)} helpText="Annual budget target (5–10%). Actual repairs are lumpy and irregular" />
+            <FormField label="CapEx Reserve %" suffix="%" value={state.rental.capexReservePercent} onChange={v => update('rental', 'capexReservePercent', v)} helpText="Annual budget target (~5%). Covers big-ticket items: roof, HVAC, appliances over time" />
             <FormField label="Owner-Paid Utilities" value={state.rental.ownerPaidUtilities} onChange={v => update('rental', 'ownerPaidUtilities', v)} placeholder="None, or list: water, lawn..." />
             <FormField label="Desired Lease Start" type="date" value={state.rental.desiredLeaseStart} onChange={v => update('rental', 'desiredLeaseStart', v)} />
             <FormField label="Allow Pets?" type="select" value={state.rental.allowPets} onChange={v => update('rental', 'allowPets', v)} options={['yes', 'no', 'case-by-case']} />
